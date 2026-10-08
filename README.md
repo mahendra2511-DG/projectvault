@@ -1,19 +1,13 @@
-# ProjectVault Analytics Library
+# ProjectVault — Data Analyst Capstone Project Library
 
-Static GitHub → Vercel-ready version of ProjectVault.
+Static site (HTML + CSS + JS, no build step). Deploy: push this folder to a GitHub repo → Vercel → Add New Project → Import → Deploy. Every push to `main` redeploys.
 
-## Run locally
-Open `index.html` directly, or serve the folder with any static web server.
+## Edit projects
+All 11 projects are in the `PROJECTS` list at the top of `app.js` (name, live URL, image, KPIs, data model, SQL topics, insights). Profile name, photo and social links are in `PROFILE`.
 
-## Deploy to Vercel
-Create a GitHub repository, upload this folder, then import the repository in Vercel. No build command is required because this version is a static HTML/CSS/JavaScript site.
-
-## Included
-11 live project links, generated project artwork, search, industry/tool filtering, favorites, recently opened, compare (up to 3), Quick Study tabs, notes stored in browser localStorage, and Add Project.
-
-
-## Recent updates
-- Clicking anywhere on a project card opens that live project in a new browser tab.
-- Added Mahendra Singh profile/social area using the information found in the supplied Stock Market project source.
-- Added Medium, YouTube and LinkedIn links.
-- Clicking the ProjectVault logo returns to the main ProjectVault home view.
+## What works
+- Click a project card (or **Open Project ↗**) → the live project opens in a new tab.
+- **Details** → overview, KPIs, data model, dashboard link, SQL / logic, insights, case study, notes, and "My status" (Not started / In progress / Completed).
+- Search (also searches KPIs and tools; press `/` to jump to it), industry and tool filters, Favourites only, sort, grid / list view.
+- Favourites, Recently Opened, Compare (2–3 projects), per-project Notes, Learning Progress and added projects are saved in the visitor's browser (localStorage).
+- ProjectVault logo → back to the home view.

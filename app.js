@@ -1,46 +1,336 @@
-const projects=[
-{id:'healthcare',name:'Healthcare Analytics',industry:'Healthcare',desc:'Clinical data analysis, patient metrics, treatment outcomes and monitoring dashboards.',img:'healthcare.png',url:'https://emr-site-nine.vercel.app/',tools:['Tableau','SQL','Snowflake'],kpis:['Total Patients','Admissions','Readmission Rate','Avg Length of Stay'],model:'Patient → Encounter → Visit → Lab / Medication / Outcome',insights:['Patient volume and admission trends','Readmission and treatment outcome patterns','Department-level performance'],sql:['Patient cohort logic','Visit and study-day calculations','Outcome aggregation'],color:'#18a8e8'},
-{id:'manufacturing',name:'AXon Manufacturing',industry:'Manufacturing',desc:'Production, quality, inventory and supply-chain analytics from floor to insight.',img:'manufacturing.png',url:'https://manufacturing-delta.vercel.app/',tools:['Power BI','SQL','Python'],kpis:['Production Output','Defect Rate','Machine Utilization','On-Time Delivery'],model:'Product → Production Order → Machine → Inventory → Shipment',insights:['Production efficiency and downtime','Defect and quality trends','Inventory and fulfillment performance'],sql:['Production aggregation','Machine utilization logic','Inventory snapshot calculations'],color:'#f4a500'},
-{id:'crm',name:'AXon CRM',industry:'CRM',desc:'Sales pipeline, customer analytics and revenue tracking across the commercial funnel.',img:'crm.png',url:'https://crm-ruddy-xi-99.vercel.app/',tools:['Tableau','SQL','Snowflake'],kpis:['Total Leads','Conversion Rate','Pipeline Value','Revenue'],model:'Account → Opportunity → Lead → Product → Activity',insights:['Pipeline conversion by stage','Revenue and deal-size trends','Customer source performance'],sql:['Funnel-stage logic','Latest opportunity snapshot','Revenue aggregation'],color:'#16a89a'},
-{id:'hr',name:'Proxima HR',industry:'HR',desc:'Employee analytics, attrition, hiring and workforce insights for people teams.',img:'hr.png',url:'https://hrnalytics.vercel.app/',tools:['Power BI','SQL','Python'],kpis:['Total Employees','Attrition Rate','Average Tenure','Open Positions'],model:'Employee → Department → Role → Hiring / Attrition / Performance',insights:['Attrition by department','Hiring pipeline and headcount','Employee satisfaction and tenure'],sql:['Headcount snapshots','Attrition cohort logic','Department rollups'],color:'#7357e8'},
-{id:'ecommerce',name:'ShopNova E-Commerce',industry:'E-Commerce',desc:'Sales, orders, customer behavior, product performance and marketing analytics.',img:'ecommerce.png',url:'https://e-commerce-theta-ten-42.vercel.app/',tools:['Tableau','SQL','Snowflake'],kpis:['GMV','Net Revenue','Orders','AOV','Return Rate'],model:'Customer → Order → Order Item → Product → Payment / Shipment',insights:['Revenue and order trends','Category and product contribution','Customer repeat-purchase behavior'],sql:['Revenue after returns','AOV and order metrics','Customer segmentation'],color:'#f04478'},
-{id:'swiggy',name:'Swiggy Analytics',industry:'Food Delivery',desc:'Orders, delivery performance, restaurant trends and customer insights.',img:'swiggy.png',url:'https://swiggypr-eight.vercel.app/',tools:['Power BI','SQL','Python'],kpis:['Total Orders','Revenue','Avg Delivery Time','Customer Rating'],model:'Customer → Order → Restaurant → Delivery Partner → Location',insights:['Cuisine and city demand','Delivery-time performance','Repeat customers and ratings'],sql:['Order and revenue aggregation','Delivery SLA logic','City and cuisine analysis'],color:'#ff6b16'},
-{id:'stock',name:'ALPHAStock Analytics',industry:'Finance / Stock',desc:'Market data, portfolio, trading and P&L analytics for investment analysis.',img:'stock.png',url:'https://stock-market-project-iota.vercel.app/',tools:['Tableau','SQL','Python'],kpis:['Market Cap','Daily Return','Volatility','Portfolio P&L'],model:'Company → Price → Trade → Portfolio → Corporate Action',insights:['Sector and company performance','Portfolio risk and return','Trading and P&L trends'],sql:['Return calculations','52-week high/low','Portfolio P&L'],color:'#159a69'},
-{id:'insurance',name:'InsuranceIQ',industry:'Insurance',desc:'Policy, claims, premium and customer analytics across insurance products.',img:'insurance.png',url:'https://insurance-iq.vercel.app/',tools:['Power BI','SQL','Snowflake'],kpis:['Total Policies','Premium','Claims Filed','Settlement Rate'],model:'Customer → Policy → Coverage → Claim → Settlement',insights:['Policy mix and premium trends','Claims status and settlement','Customer satisfaction'],sql:['Policy snapshots','Claim lifecycle logic','Premium aggregation'],color:'#1d70e8'},
-{id:'hospitality',name:'SHODWE Hotel',industry:'Hospitality',desc:'Revenue, bookings, occupancy, room performance and guest insights.',img:'hospitality.png',url:'https://hospitality-neon.vercel.app/',tools:['Tableau','SQL','Power BI'],kpis:['Bookings','Occupancy','ADR','RevPAR'],model:'Hotel → Room → Booking → Guest → Date / Channel',insights:['Occupancy and revenue trends','Room-type performance','Booking channel contribution'],sql:['Occupancy calculations','ADR and RevPAR','Booking-date logic'],color:'#c88b12'},
-{id:'supply-chain',name:'Supply Chain Analytics',industry:'Supply Chain',desc:'Procurement, inventory, logistics and demand planning analytics.',img:'supply-chain.png',url:'https://supply-chain-omega-two.vercel.app/',tools:['Power BI','SQL','Python'],kpis:['Orders','On-Time Delivery','Inventory Turnover','Supply Chain Cost'],model:'Supplier → Purchase Order → Warehouse → Inventory → Shipment',insights:['Supplier performance','Inventory and stockout risk','Logistics cost and lead time'],sql:['Inventory snapshots','Supplier scorecards','Shipment-mode analysis'],color:'#1266d6'},
-{id:'marketing',name:'Marketing Analytics',industry:'Marketing',desc:'Campaign performance, acquisition, conversion, traffic and engagement analytics.',img:'marketing.png',url:'https://marketingpr.vercel.app/',tools:['Power BI','SQL','Python'],kpis:['Campaigns','Impressions','Visitors','Conversions','ROAS'],model:'Campaign → Channel → Visitor → Lead → Conversion',insights:['Channel contribution','Campaign ROI and ROAS','Lead generation and CAC'],sql:['Channel attribution','Campaign aggregation','CAC and conversion logic'],color:'#d92d8a'}
+/* ProjectVault — Mahendra Singh's Data Analyst capstone project library.
+   Static site (no build step). Everything the visitor changes (favourites, notes, progress,
+   added projects) is saved in this browser only. */
+
+const PROFILE = {
+  name: "Mahendra Singh",
+  role: "Data Analyst Trainer · ExcelR",
+  photo: "assets/mahendra-photo.jpg",
+  links: [
+    { k: "medium", label: "Medium", icon: "M", url: "https://medium.com/@mahendraa1188" },
+    { k: "youtube", label: "YouTube", icon: "▶", url: "https://www.youtube.com/channel/UC2q-vZWSlQpiGiMcSLUqnIg" },
+    { k: "linkedin", label: "LinkedIn", icon: "in", url: "https://www.linkedin.com/in/mahendra-singh-%F0%9F%87%AE%F0%9F%87%B3%F0%9F%9A%80%E2%9D%84%EF%B8%8F-%F0%9F%90%8D-%F0%9F%A6%84-83699485/" },
+  ],
+};
+
+const STD_TOOLS = ["Excel", "MySQL", "Tableau", "Power BI"];
+const PROJECTS = [
+  { id: "healthcare", tables: 7, name: "AXON Healthcare (EMR)", industry: "Healthcare", img: "healthcare.jpg", color: "#18a8e8", url: "https://emr-site-nine.vercel.app/",
+    desc: "Hospital EMR data: patients, doctors, visits, treatments, lab tests, billing and insurance claims.",
+    tools: STD_TOOLS, size: "7 tables · 10,000 patients · 1,000 doctors",
+    kpis: ["Total Visits", "Visit Completion %", "Cancellation %", "Treatment Success %", "Lab Abnormal %", "Collection Rate %"],
+    model: "Department → Doctor → Visit ← Patient. Treatment, Lab Test and Billing all hang off Visit ID, so Visit is the centre of the model.",
+    sql: ["Visits and completion / cancellation rates", "Department and doctor workload", "Lab turnaround and abnormal results", "Billing, insurance coverage and collections"],
+    insights: ["Visit is the grain: count everything per visit, then roll up to doctor and department", "Lab numeric results are empty for imaging and pending tests, which is expected", "Billing and lab results only make sense once linked back to the visit"] },
+  { id: "manufacturing", tables: 9, name: "AXon Manufacturing", industry: "Manufacturing", img: "manufacturing.jpg", color: "#f4a500", url: "https://manufacturing-delta.vercel.app/",
+    desc: "Garment plant production data: work orders, machines, operations, rejections, cost and delivery.",
+    tools: STD_TOOLS, size: "9 tables · 10,000 work orders · 86 machines",
+    kpis: ["Total Work Orders", "Efficiency Rate %", "Machine Utilization %", "Rejection Rate %", "On-Time Delivery %", "Cost per Unit"],
+    model: "Star schema: fact_Production in the centre, joined to dim_Buyer, dim_Customer, dim_Employee, dim_Operation, dim_Machine, dim_Department, dim_Item and dim_Date.",
+    sql: ["Filter the 679 blank rows (Doc_Num IS NULL) before every count", "Efficiency and utilization as ratios of sums", "Rejection rate by operation, machine and department", "On-time delivery and repeat orders by buyer"],
+    insights: ["10,679 rows but only 10,000 real work orders", "On-time delivery is 32.94% (30.85% if the blank rows stay in)", "Rejection rate sits at 0.81%–0.84% in every department: no problem department"] },
+  { id: "crm", tables: 5, name: "AXon CRM", industry: "CRM", img: "crm.jpg", color: "#16a89a", url: "https://crm-ruddy-xi-99.vercel.app/",
+    desc: "Salesforce CRM exports loaded into Snowflake: leads, accounts, opportunities, products and sales reps.",
+    tools: ["Excel", "Snowflake", "Tableau", "Power BI"], size: "5 tables · 10,000 leads · 4,646 opportunities",
+    kpis: ["Total Leads", "Lead Conversion Rate", "Win Rate", "Open Pipeline", "Won Revenue", "Avg Deal Size"],
+    model: "Raw → Staging → Mart in Snowflake. fact_opportunity is the centre; accounts and users join one-to-many, product lines hang off opportunity_id, leads link in after they convert.",
+    sql: ["Lead funnel and conversion", "Pipeline by stage and rep", "Won revenue without double counting product lines", "Mart views vw_lead_funnel and vw_opp_summary"],
+    insights: ["Three facts at three grains: lead, opportunity and product line", "Getting the grain wrong triples revenue", "Leads join to accounts and opportunities only after conversion"] },
+  { id: "hr", tables: 18, name: "Proxima HR Analytics", industry: "HR", img: "hr.jpg", color: "#7357e8", url: "https://hrnalytics.vercel.app/",
+    desc: "Workforce data across hiring, headcount, attrition, promotions, performance and pay.",
+    tools: STD_TOOLS, size: "18 tables · 2,299 employees · 1,338 current headcount",
+    kpis: ["Headcount (Closing)", "Attrition %", "Voluntary Attrition %", "New Hires", "Offer Acceptance Rate %", "Promotion Rate %"],
+    model: "Employee is the hub, with department, role and location dimensions and separate event tables for hiring, exits, promotions and performance.",
+    sql: ["Opening and closing headcount", "Attrition and voluntary attrition rates", "Hiring funnel and offer acceptance", "Promotion and retention rates"],
+    insights: ["2,299 employees ever, 1,338 still on the books", "Attrition needs an average-headcount denominator, not the closing number", "Voluntary and regrettable attrition tell a different story from total attrition"] },
+  { id: "ecommerce", tables: 5, name: "ShopNova E-Commerce", industry: "E-Commerce", img: "ecommerce.jpg", color: "#f04478", url: "https://e-commerce-theta-ten-42.vercel.app/",
+    desc: "Online retail data: orders, customers, products, returns and marketing campaigns.",
+    tools: STD_TOOLS, size: "5 tables · 7,562 order lines · 800 customers",
+    kpis: ["GMV", "Net Revenue", "AOV", "Return Rate", "Repeat Purchase Rate", "ROAS / CAC"],
+    model: "Customers → Orders ← Products, Orders → Returns. Campaigns has no key into Orders: it is one row per channel × month, so join it on channel and month only.",
+    sql: ["GMV and net revenue after returns", "Cancellation and return rates", "3-day shipping SLA", "Channel ROAS and CAC"],
+    insights: ["Repeat purchase rate is 48%", "Campaigns is pre-aggregated: never join it row by row to orders", "Coupon_Code is empty when no coupon was used, which is expected"] },
+  { id: "swiggy", tables: 12, name: "Swiggy Data Analytics", industry: "Food Delivery", img: "swiggy.jpg", color: "#ff6b16", url: "https://swiggypr-eight.vercel.app/",
+    desc: "Food-delivery data: orders, deliveries, payments, ratings, restaurants, menus and customers.",
+    tools: STD_TOOLS, size: "12 tables · 10,000 orders · 499 restaurants",
+    kpis: ["Total Revenue", "AOV", "Repeat Customers %", "On-Time Delivery %", "Cancellation Rate", "Customer Satisfaction Score"],
+    model: "Orders is the hub. Delivery joins 1:1, Payments on Payment ID, Ratings on the 'ORD' number minus 999. Menu links only to Restaurant: there is no order-items table.",
+    sql: ["Revenue, AOV and revenue per customer", "Repeat customers counted per customer", "On-time % from Delivery Status = 'On Time'", "The ORD-offset join for payments and ratings"],
+    insights: ["Revenue ₹1,04,33,244 from 10,000 orders (AOV ₹1,043.32)", "Repeat customers 41.73% (the KPI sheet's formula wrongly gives 100%)", "Two order-status columns agree on only 16.6% of rows"] },
+  { id: "stock", tables: 13, name: "ALPHA Stock Analytics", industry: "Finance / Stock", img: "stock.jpg", color: "#159a69", url: "https://stock-market-project-iota.vercel.app/",
+    desc: "Market data for 8 NSE and NASDAQ companies: prices, orders, trades, positions, dividends and P&L.",
+    tools: STD_TOOLS, size: "13 tables · 1,032 price rows · 500 trades",
+    kpis: ["Daily Return", "Volatility", "Portfolio Value", "Order Fill Rate", "Fees", "Realized P&L"],
+    model: "Load the small dimensions first (exchange, sector, company, trader, portfolio, calendar), then the facts. fact_trades links back to fact_orders; trade P&L is derived from the sell trades.",
+    sql: ["Daily returns with LAG", "Volatility per company", "Fees by desk and trader", "Win rate and realized P&L"],
+    insights: ["Split-unadjusted prices make returns look wrong: use the adjusted close", "Every order maps to exactly one trade", "Suspect-volume rows are flagged, not deleted"] },
+  { id: "insurance", tables: 16, name: "InsureIQ", industry: "Insurance", img: "insurance.jpg", color: "#1d70e8", url: "https://insurance-iq.vercel.app/",
+    desc: "Insurance broker branch performance plus a 5,000-policy book with customers, claims and payments.",
+    tools: STD_TOOLS, size: "2 datasets · 16 tables · 51 account executives",
+    kpis: ["New Business Achievement %", "Cross-Sell Achievement %", "Renewal Achievement %", "Placed vs Invoiced", "Open Pipeline", "Claims Ratio"],
+    model: "Branch Data is exec-centric: every fact (brokerage, fees, invoices, meetings, opportunities, budgets) joins through the account executive. Policy Data is a simple star around Policy Details. Keep them as two schemas.",
+    sql: ["Achievement % against New / Cross-Sell / Renewal budgets", "Placed vs invoiced revenue", "Pipeline and meetings per exec", "Policy, claims and payment KPIs"],
+    insights: ["Two datasets, two schemas: don't force a join between them", "Budgets are per exec, so achievement is computed per exec first", "Pipeline and meetings explain who will hit target next"] },
+  { id: "hospitality", tables: 5, name: "Shodwe Hotels", industry: "Hospitality", img: "hospitality.jpg", color: "#c88b12", url: "https://hospitality-neon.vercel.app/",
+    desc: "Hotel booking data for 25 hotels in 4 cities: bookings, capacity, revenue and ratings, May–July 2022.",
+    tools: STD_TOOLS, size: "5 tables · 134,590 bookings · 25 hotels",
+    kpis: ["Revenue", "ADR", "RevPAR", "Occupancy %", "Cancellation %", "Realisation %"],
+    model: "Two facts at two grains: fact_bookings (one row per booking) and fact_aggregated_bookings (hotel × day × room capacity), sharing dim_hotels, dim_date and dim_rooms.",
+    sql: ["Revenue realized vs generated", "ADR and RevPAR", "Occupancy from successful bookings ÷ capacity", "Cancellation and no-show rates"],
+    insights: ["Never join the two facts directly: filter both through the shared dimensions", "RevPAR needs capacity from the aggregated table", "Weekend vs weekday is defined in dim_date"] },
+  { id: "supply-chain", tables: 6, name: "Supply Chain Analytics", industry: "Supply Chain", img: "supply-chain.jpg", color: "#1266d6", url: "https://supply-chain-omega-two.vercel.app/",
+    desc: "Orders, inventory snapshots, suppliers, warehouses, products and customers across the supply chain.",
+    tools: STD_TOOLS, size: "6 tables · 12,000 orders · 20 warehouses",
+    kpis: ["Revenue", "Gross Margin", "On-Time Delivery %", "Avg Delay Days", "Fill Rate", "Inventory Turnover"],
+    model: "Fact_Orders is the hub, joined to Customer, Product, Supplier and Warehouse. Fact_Inventory shares only Product and Warehouse: never join the two facts directly.",
+    sql: ["Revenue and gross margin by tier", "On-time delivery and delay days", "Supplier scorecards", "Inventory snapshots (don't sum them like sales)"],
+    insights: ["Revenue is $187.98M", "Average delay counts only rows with Delay_Days above 0", "Inventory snapshots summed like sales make stock look inflated"] },
+  { id: "marketing", tables: 9, name: "AXon Marketing Analytics", industry: "Marketing", img: "marketing.jpg", color: "#d92d8a", url: "https://marketingpr.vercel.app/",
+    desc: "Email, Facebook, Instagram, WhatsApp and website data for AXon Retail, 2023–2024.",
+    tools: STD_TOOLS, size: "9 tables · 313,895 email events · 103 campaigns",
+    kpis: ["Delivery Rate", "Open Rate (Unique)", "Click-Through Rate", "Campaign Engagement Rate", "Unique Visitors", "Bounce Rate"],
+    model: "Campaigns sit at the centre; email events, social ads, WhatsApp and web traffic are separate channel facts joined through campaign and date.",
+    sql: ["Unique opens and clicks per campaign", "Channel funnel from send to conversion", "Top performing campaigns", "Web visitors and bounce rate"],
+    insights: ["Count unique opens, not every open event", "Each channel has its own grain: compare rates, not raw counts", "60 KPIs across email, social, WhatsApp and web"] },
 ];
-const nav=[['All Projects','▦'],['Healthcare','✚'],['Manufacturing','⚙'],['CRM','♟'],['HR','♟'],['E-Commerce','🛒'],['Food Delivery','🛵'],['Finance / Stock','↗'],['Insurance','♢'],['Hospitality','▥'],['Supply Chain','▰'],['Marketing','◈']];
-let state={q:'',industry:'All Projects',tool:'All Tools',sort:'Latest First',favorites:JSON.parse(localStorage.getItem('pv-fav')||'[]'),recent:JSON.parse(localStorage.getItem('pv-recent')||'[]'),compare:JSON.parse(localStorage.getItem('pv-compare')||'[]'),selected:null,tab:'Overview',notes:localStorage.getItem('pv-notes')||'',custom:[]};
-const all=()=>[...projects,...state.custom];
-function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
-function save(){localStorage.setItem('pv-fav',JSON.stringify(state.favorites));localStorage.setItem('pv-recent',JSON.stringify(state.recent));localStorage.setItem('pv-compare',JSON.stringify(state.compare));localStorage.setItem('pv-notes',state.notes)}
-function icon(i){return `<span class="iconGlyph">${i}</span>`}
-function render(){
- const data=all(), industries=['All Projects',...new Set(data.map(p=>p.industry))], tools=['All Tools',...new Set(data.flatMap(p=>p.tools))];
- let filtered=data.filter(p=>(state.industry==='All Projects'||p.industry===state.industry)&&(state.tool==='All Tools'||p.tools.includes(state.tool))&&(`${p.name} ${p.industry} ${p.desc} ${p.tools.join(' ')}`.toLowerCase().includes(state.q.toLowerCase())));
- if(state.sort==='A–Z')filtered.sort((a,b)=>a.name.localeCompare(b.name)); if(state.sort==='Favorites')filtered=filtered.filter(p=>state.favorites.includes(p.id));
- document.getElementById('app').innerHTML=`<div class="shell">
- <aside class="sidebar"><button class="brand brandButton" onclick="goHome()" title="Go to ProjectVault Home"><div class="brandCube"><i></i><b></b><em></em></div><div><strong>Project<span>Vault</span></strong><small>My Analytics & Digital Project Library</small></div></button><nav class="nav">${nav.map(([n,i])=>`<button class="${state.industry===n?'active':''}" onclick="setIndustry('${n}')">${icon(i)}<span>${n}</span><small>${n==='All Projects'?data.length:data.filter(p=>p.industry===n).length||''}</small></button>`).join('')}</nav><div class="navDivider"></div><button class="utility" onclick="setSort('Favorites')">${icon('★')}<span>Favorites</span><small>${state.favorites.length}</small></button><button class="utility" onclick="resetRecent()">${icon('◷')}<span>Recently Opened</span><small>${state.recent.length}</small></button><button class="utility" onclick="openCompare()">${icon('⚖')}<span>Compare Projects</span><small>${state.compare.length}</small></button><button class="utility" onclick="openNotes()">${icon('▤')}<span>Notes</span></button><div class="sidebarBottom"><b>💡 Learn. Build. Grow.</b><span>All your analytics projects<br>in one place.</span></div></aside>
- <section class="main"><header class="hero"><div><h1>Project<span>Vault</span></h1><h2>My Analytics & Digital Project Library</h2><p>Explore end-to-end data analytics projects across industries. Learn, analyze and get inspired.</p></div><div class="heroArt"><div class="mountain"></div><div class="miniChart"><span></span><span></span><span></span><span></span><span></span></div></div></header>
- <div class="toolbar"><div class="search"><span>⌕</span><input id="search" value="${esc(state.q)}" placeholder="Search projects (e.g., healthcare, SQL, dashboard...)" oninput="state.q=this.value;render()"></div><select onchange="state.industry=this.value;render()">${industries.map(x=>`<option ${x===state.industry?'selected':''}>${x}</option>`).join('')}</select><select onchange="state.tool=this.value;render()">${tools.map(x=>`<option ${x===state.tool?'selected':''}>${x}</option>`).join('')}</select><select><option>All Types</option><option>Dashboard</option></select><button class="addBtn" onclick="addProject()">＋ Add Project</button></div>
- <section class="stats"><div class="stat"><div class="statIcon">▱</div><div><strong>${data.length}</strong><b>Total Projects</b><small>All your project links</small></div></div><div class="stat"><div class="statIcon">▥</div><div><strong>${new Set(data.map(p=>p.industry)).size}</strong><b>Industries</b><small>Diverse domain coverage</small></div></div><div class="stat"><div class="statIcon">▥</div><div><strong>${data.length}</strong><b>Dashboard Projects</b><small>Interactive & insightful</small></div></div><div class="stat"><div class="statIcon">◷</div><div><strong>Today</strong><b>Last Updated</b><small>Keep learning, keep growing</small></div></div></section>
- <div class="contentTitle"><h3>${state.industry==='All Projects'?'All Projects':esc(state.industry)}</h3><div>Sort by: <select onchange="state.sort=this.value;render()"><option ${state.sort==='Latest First'?'selected':''}>Latest First</option><option ${state.sort==='A–Z'?'selected':''}>A–Z</option><option ${state.sort==='Favorites'?'selected':''}>Favorites</option></select><button class="viewBtn">▦</button><button class="viewBtn">☷</button></div></div>
- <div class="grid">${filtered.map(card).join('')}<button class="newCard" onclick="addProject()"><div>＋</div><b>Add New Project</b><span>Add your project link, details<br>and resources.</span></button></div>
- <div class="bottomGrid"><section class="recentPanel"><div class="panelTitle"><h3>◷ Recently Opened</h3></div><div class="recentList">${recent().map(p=>`<button onclick="openProject('${p.id}')"><img src="assets/${p.img}"><span><b>${esc(p.name)}</b><small>Recently opened</small></span></button>`).join('')||'<p class="empty">Open projects to build your recent list.</p>'}</div></section><section class="comparePanel"><div class="panelTitle"><h3>⚖ Compare Projects</h3><button onclick="openCompare()">＋ Compare</button></div><p>Compare KPIs, tools and features across projects.</p><div class="chips">${compare().map(p=>`<button onclick="toggleCompare('${p.id}')">${esc(p.name)} ×</button>`).join('')||'<span class="muted">Select up to 3 projects using the compare icon.</span>'}</div></section></div></section>
- <aside class="rightbar"><div class="profile"><div class="searchIcon">⌕</div><div class="bell">♧<b>3</b></div><div class="avatar photo" aria-label="Mahendra Singh">M</div><div><strong>Mahendra Singh</strong><small>Data Analyst | Project Library</small></div><span>⌄</span></div><div class="socialLinks"><a href="https://medium.com/@mahendraa1188" target="_blank" rel="noopener" title="Medium">M <span>Medium</span></a><a href="https://www.youtube.com/channel/UC2q-vZWSlQpiGiMcSLUqnIg" target="_blank" rel="noopener" title="YouTube">▶ <span>YouTube</span></a><a href="https://www.linkedin.com/in/mahendra-singh-%F0%9F%87%AE%F0%9F%87%B3%F0%9F%9A%80%E2%9D%84%EF%B8%8F-%F0%9F%90%8D-%F0%9F%A6%84-83699485/" target="_blank" rel="noopener" title="LinkedIn">in <span>LinkedIn</span></a></div><section class="quick"><h3>📖 Quick Study</h3><p>${state.selected?'Currently studying: '+esc(state.selected.name):'Open any project and explore structured learning resources.'}</p>${['Project Overview','KPIs','Data Model','Dashboard','SQL / Logic','Key Insights','Case Study','Notes'].map((x,i)=>`<button onclick="quick('${x}')"><i>${['✦','⌁','⊞','▣','⌘','♨','⚑','▤'][i]}</i><span><b>${x}</b><small>${['Business problem & objectives','Key metrics and definitions','Tables, relationships, ERD','Interactive dashboard link','Key queries and calculations','Business findings','Approach, challenges, outcomes','Personal notes and learnings'][i]}</small></span><em>›</em></button>`).join('')}</section><section class="progress"><h3>♬ Learning Progress</h3><div class="progressBody"><div class="donut"><strong>42%</strong><span>Completed</span></div><div><p><i class="dot green"></i>Completed <b>5</b></p><p><i class="dot blue"></i>In Progress <b>4</b></p><p><i class="dot gray"></i>Not Started <b>3</b></p></div></div><div class="bar"><span></span></div><small>Keep going! You're doing great.</small></section></aside></div>`;
+const NAV = [["All Projects", "▦"], ["Healthcare", "✚"], ["Manufacturing", "⚙"], ["CRM", "🤝"], ["HR", "👥"], ["E-Commerce", "🛒"], ["Food Delivery", "🛵"], ["Finance / Stock", "↗"], ["Insurance", "🛡"], ["Hospitality", "🏨"], ["Supply Chain", "🚚"], ["Marketing", "📣"]];
+const TABS = ["Overview", "KPIs", "Data Model", "Dashboard", "SQL / Logic", "Key Insights", "Case Study", "Notes"];
+const TAB_HINT = ["Business problem & scope", "Key metrics", "Tables & relationships", "Open the live project", "Key queries & calculations", "Business findings", "Approach & outcome", "Your notes for this project"];
+const TAB_ICON = ["✦", "⌁", "⊞", "▣", "⌘", "♨", "⚑", "▤"];
+const STATUS = ["Not started", "In progress", "Completed"];
+
+/* ---------- storage (never throws) ---------- */
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+const state = {
+  q: "", industry: "All Projects", tool: "All Tools", sort: "Default", view: LS.get("pv-view", "grid"), favOnly: false,
+  favorites: LS.get("pv-fav", []), recent: LS.get("pv-recent", []), compare: LS.get("pv-compare", []),
+  notes: LS.get("pv-notes2", {}), status: LS.get("pv-status", {}), custom: LS.get("pv-custom", []),
+  selected: null, tab: "Overview",
+};
+if (typeof state.notes !== "object" || Array.isArray(state.notes)) state.notes = {};
+const save = () => { LS.set("pv-fav", state.favorites); LS.set("pv-recent", state.recent); LS.set("pv-compare", state.compare); LS.set("pv-notes2", state.notes); LS.set("pv-status", state.status); LS.set("pv-custom", state.custom); LS.set("pv-view", state.view); };
+
+const all = () => [...PROJECTS, ...state.custom];
+const byId = (id) => all().find((p) => p.id === id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>'"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c]));
+const $ = (s, r = document) => r.querySelector(s);
+const safeUrl = (u) => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : ""; } catch (e) { return ""; } };
+
+/* ---------- actions ---------- */
+function touchRecent(id) { state.recent = [id, ...state.recent.filter((x) => x !== id)].slice(0, 6); save(); }
+function openLive(id) {
+  const p = byId(id); if (!p) return; const u = safeUrl(p.url); if (!u) return;
+  touchRecent(id); if (!state.status[id]) state.status[id] = "In progress"; save();
+  window.open(u, "_blank", "noopener"); renderAll();
 }
-function card(p){return `<article class="card" onclick="openLiveProject('${p.id}', event)" title="Open ${esc(p.name)} in a new tab"><div class="cardImg"><img src="assets/${p.img}" alt="${esc(p.name)}"><div class="cardIcon" style="background:${p.color}">◈</div></div><div class="cardBody"><div class="cardName"><h4>${esc(p.name)}</h4><button class="star ${state.favorites.includes(p.id)?'on':''}" onclick="event.stopPropagation();toggleFav('${p.id}')">★</button></div><span class="tag">${esc(p.industry)}</span><p>${esc(p.desc)}</p><div class="toolTags">${p.tools.map(t=>`<span>${esc(t)}</span>`).join('')}</div><div class="cardActions"><button onclick="event.stopPropagation();openLiveProject('${p.id}', event)">Open Project →</button><button class="compare ${state.compare.includes(p.id)?'on':''}" onclick="event.stopPropagation();toggleCompare('${p.id}')">☆</button></div></div></article>`}
-function recent(){return state.recent.map(id=>all().find(p=>p.id===id)).filter(Boolean).slice(0,5)} function compare(){return state.compare.map(id=>all().find(p=>p.id===id)).filter(Boolean)}
-function setIndustry(x){state.industry=x;state.q='';state.sort='Latest First';render()} function setSort(x){state.sort=x;render()} function resetRecent(){state.recent=[];save();render()} function toggleFav(id){state.favorites=state.favorites.includes(id)?state.favorites.filter(x=>x!==id):[...state.favorites,id];save();render()} function toggleCompare(id){state.compare=state.compare.includes(id)?state.compare.filter(x=>x!==id):(state.compare.length<3?[...state.compare,id]:state.compare);save();render()} 
-function goHome(){state.q='';state.industry='All Projects';state.tool='All Tools';state.sort='Latest First';state.selected=null;document.querySelector('.overlay')?.remove();render();window.scrollTo({top:0,behavior:'smooth'});}
-function openLiveProject(id,event){if(event?.target?.closest('button'))return;const p=all().find(x=>x.id===id);if(!p)return;state.recent=[id,...state.recent.filter(x=>x!==id)].slice(0,5);save();window.open(p.url,'_blank','noopener,noreferrer');}
-function openProject(id,tab='Overview'){const p=all().find(x=>x.id===id);if(!p)return;state.selected=p;state.tab=tab;state.recent=[id,...state.recent.filter(x=>x!==id)].slice(0,5);save();renderModal()}
-function quick(tab){if(tab==='Notes'){openNotes();return} if(state.selected){state.tab=tab;renderModal()}else{const first=projects[0];state.selected=first;state.tab=tab;state.recent=[first.id,...state.recent.filter(x=>x!==first.id)].slice(0,5);save();renderModal()}}
-function openNotes(){if(!state.selected)state.selected=projects[0];state.tab='Notes';renderModal()} function closeModal(){state.selected=null;document.querySelector('.overlay')?.remove();render()}
-function renderModal(){document.querySelector('.overlay')?.remove();if(!state.selected)return;const p=state.selected;const body={Overview:[['Business Problem',p.desc],['Learning Goal','Understand the end-to-end analytics workflow and convert business questions into measurable insights.'],['Project Type','Dashboard']],KPIs:[['Core KPIs',p.kpis.join(' • ')],['Suggested Analysis','Trend, segmentation, contribution, variance and performance analysis.']],'Data Model':[['Model',p.model],['Relationship Pattern','Dimension → Fact → Business metric with time and entity keys.']],Dashboard:[['Live Dashboard','Open the interactive project in a new tab.'],['Tools',p.tools.join(' • ')]],'SQL / Logic':[['Core Logic',p.sql.join(' • ')],['Practice','Recreate the metric, validate edge cases and explain the business impact.']], 'Key Insights':[['Business Findings',p.insights.join(' • ')],['Interview Angle','Explain what changed, why it changed, and what action the business should take.']], 'Case Study':[['Approach','Problem → Data → Transformation → KPI → Dashboard → Insight → Recommendation'],['Outcome','A portfolio-ready end-to-end analytics case study.']],Notes:[['Project Notes','']]};let content='';if(state.tab==='Dashboard')content=`<div class="infoBox"><b>Live dashboard</b><p>Open the full interactive project in a new tab.</p><a href="${p.url}" target="_blank">Open Project ↗</a></div><div class="infoBox"><b>Project URL</b><p>${p.url}</p></div>`;else if(state.tab==='Notes')content=`<div class="noteBox"><b>Project Notes</b><textarea id="notesArea" placeholder="Write your learning notes, interview points or questions...">${esc(state.notes)}</textarea><span>Saved locally in your browser.</span></div>`;else content=body[state.tab].map(x=>`<div class="infoBox"><b>${esc(x[0])}</b><p>${esc(x[1])}</p></div>`).join('');const tabs=['Overview','KPIs','Data Model','Dashboard','SQL / Logic','Key Insights','Case Study','Notes'];document.body.insertAdjacentHTML('beforeend',`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="detailModal"><button class="close" onclick="closeModal()">×</button><div class="detailHero"><img src="assets/${p.img}"><div><span class="tag">${esc(p.industry)}</span><h2>${esc(p.name)}</h2><p>${esc(p.desc)}</p><div class="toolTags">${p.tools.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div></div><div class="tabs">${tabs.map(t=>`<button class="${state.tab===t?'selected':''}" onclick="state.tab='${t}';renderModal()">${t}</button>`).join('')}</div><div class="detailBody">${content}</div></div></div>`);document.getElementById('notesArea')?.addEventListener('input',e=>{state.notes=e.target.value;save()})}
-function openCompare(){document.body.insertAdjacentHTML('beforeend',`<div class="overlay" id="compareOverlay" onclick="if(event.target===this)this.remove()"><div class="compareModal"><button class="close" onclick="document.getElementById('compareOverlay').remove()">×</button><h2>Compare Projects</h2><p>Select up to three projects and compare their analytics focus.</p><div class="compareTable">${compare().map(p=>`<div class="compareCol"><img src="assets/${p.img}"><h3>${esc(p.name)}</h3><span>${esc(p.industry)}</span><b>KPIs</b><p>${p.kpis.join(' • ')}</p><b>Tools</b><p>${p.tools.join(' • ')}</p><b>Model</b><p>${esc(p.model)}</p><button onclick="toggleCompare('${p.id}');document.getElementById('compareOverlay').remove();openCompare()">Remove</button></div>`).join('')||'<div class="emptyCompare">Choose projects from the cards using the ☆ compare button.</div>'}</div></div></div>`)}
-function addProject(){document.body.insertAdjacentHTML('beforeend',`<div class="overlay" id="addOverlay"><div class="addModal"><button class="close" onclick="document.getElementById('addOverlay').remove()">×</button><h2>Add Project</h2><p>Add a live project link to your personal library.</p><label>Project name<input id="newName" placeholder="e.g. Banking Analytics"></label><label>Project URL<input id="newUrl" placeholder="https://..."></label><label>Industry<input id="newIndustry" value="Other"></label><button class="primary" onclick="saveProject()">Save Project</button></div></div>`)}
-function saveProject(){const name=document.getElementById('newName').value.trim(),url=document.getElementById('newUrl').value.trim(),industry=document.getElementById('newIndustry').value.trim()||'Other';if(!name||!url)return;state.custom.push({id:'custom-'+Date.now(),name,industry,desc:'Custom project added to ProjectVault.',img:'marketing.png',url,tools:['SQL'],kpis:['Add KPI definitions'],model:'Add your data model',insights:['Add business insights'],sql:['Add SQL / logic'],color:'#2369ee'});document.getElementById('addOverlay').remove();render()}
-render();
+function toggleFav(id) { state.favorites = state.favorites.includes(id) ? state.favorites.filter((x) => x !== id) : [...state.favorites, id]; save(); renderAll(); }
+function toggleCompare(id) {
+  if (state.compare.includes(id)) state.compare = state.compare.filter((x) => x !== id);
+  else if (state.compare.length >= 3) { toast("You can compare up to 3 projects. Remove one first."); return; }
+  else state.compare = [...state.compare, id];
+  save(); renderAll();
+}
+function goHome() { Object.assign(state, { q: "", industry: "All Projects", tool: "All Tools", sort: "Default", favOnly: false }); closeOverlays(); const s = $("#search"); if (s) s.value = ""; renderAll(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+function toast(msg) { let t = $("#toast"); if (!t) { t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t); } t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2600); }
+function closeOverlays() { document.querySelectorAll(".overlay").forEach((o) => o.remove()); state.selected = null; document.body.classList.remove("modalOpen"); }
+function scrollToId(id) { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); }
+
+/* ---------- filtering ---------- */
+function filtered() {
+  const q = state.q.trim().toLowerCase();
+  let list = all().filter((p) => (state.industry === "All Projects" || p.industry === state.industry)
+    && (state.tool === "All Tools" || (p.tools || []).includes(state.tool))
+    && (!state.favOnly || state.favorites.includes(p.id))
+    && (!q || [p.name, p.industry, p.desc, (p.tools || []).join(" "), (p.kpis || []).join(" ")].join(" ").toLowerCase().includes(q)));
+  if (state.sort === "A–Z") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+  if (state.sort === "Recently opened") list = [...list].sort((a, b) => (state.recent.indexOf(a.id) + 1 || 99) - (state.recent.indexOf(b.id) + 1 || 99));
+  return list;
+}
+
+/* ---------- render ---------- */
+function shell() {
+  const tools = ["All Tools", ...new Set(all().flatMap((p) => p.tools || []))];
+  $("#app").innerHTML = `<div class="shell">
+  <aside class="sidebar">
+    <a class="brand brandButton" href="./" data-act="home" title="ProjectVault home"><div class="brandCube"><i></i><b></b><em></em></div><div><strong>Project<span>Vault</span></strong><small>My Analytics &amp; Digital Project Library</small></div></a>
+    <nav class="nav" id="nav"></nav><div class="navDivider"></div><div id="utility"></div>
+    <div class="sidebarBottom"><b>💡 Learn. Build. Grow.</b><span>All Data Analyst capstone projects<br>in one place.</span></div>
+  </aside>
+  <section class="main">
+    <header class="hero"><div><h1>Project<span>Vault</span></h1><h2>My Analytics &amp; Digital Project Library</h2><p>End-to-end Data Analyst capstone projects across 11 industries: Excel, SQL, Tableau and Power BI on real-style business data. Click a project to open its live site.</p></div><div class="heroArt"><div class="mountain"></div><div class="miniChart"><span></span><span></span><span></span><span></span><span></span></div></div></header>
+    <div class="toolbar"><div class="search"><span>⌕</span><input id="search" type="search" placeholder="Search projects, KPIs or tools (e.g. RevPAR, attrition, Snowflake)" aria-label="Search projects"></div>
+      <select id="selIndustry" aria-label="Industry"></select>
+      <select id="selTool" aria-label="Tool">${tools.map((x) => `<option>${esc(x)}</option>`).join("")}</select>
+      <button class="favToggle" id="favToggle" data-act="favOnly">★ Favourites only</button>
+      <button class="addBtn" data-act="add">＋ Add Project</button></div>
+    <section class="stats" id="stats"></section>
+    <div class="contentTitle"><h3 id="listTitle">All Projects</h3><div>Sort by: <select id="selSort" aria-label="Sort"><option>Default</option><option>A–Z</option><option>Recently opened</option></select><button class="viewBtn" data-act="view" data-v="grid" title="Grid view">▦</button><button class="viewBtn" data-act="view" data-v="list" title="List view">☷</button></div></div>
+    <div class="grid" id="grid"></div>
+    <div class="bottomGrid"><section class="recentPanel" id="recentPanel"></section><section class="comparePanel" id="comparePanel"></section></div>
+  </section>
+  <aside class="rightbar" id="rightbar"></aside></div>`;
+  $("#selIndustry").innerHTML = NAV.map(([n]) => `<option>${esc(n)}</option>`).join("");
+}
+function renderSidebar() {
+  const data = all();
+  $("#nav").innerHTML = NAV.map(([n, i]) => { const c = n === "All Projects" ? data.length : data.filter((p) => p.industry === n).length;
+    return `<button class="${state.industry === n && !state.favOnly ? "active" : ""}" data-act="industry" data-v="${esc(n)}"><span class="iconGlyph">${i}</span><span>${esc(n)}</span><small>${c || ""}</small></button>`; }).join("");
+  $("#utility").innerHTML = `
+    <button class="utility ${state.favOnly ? "active" : ""}" data-act="favOnly"><span class="iconGlyph">★</span><span>Favourites</span><small>${state.favorites.length}</small></button>
+    <button class="utility" data-act="goRecent"><span class="iconGlyph">◷</span><span>Recently Opened</span><small>${state.recent.length}</small></button>
+    <button class="utility" data-act="compare"><span class="iconGlyph">⚖</span><span>Compare Projects</span><small>${state.compare.length}</small></button>
+    <button class="utility" data-act="notes"><span class="iconGlyph">▤</span><span>Notes</span><small>${Object.values(state.notes).filter((v) => v && v.trim()).length || ""}</small></button>`;
+}
+function renderStats() {
+  const data = all(); const done = data.filter((p) => state.status[p.id] === "Completed").length;
+  const tables = PROJECTS.reduce((a, p) => a + (p.tables || 0), 0);
+  $("#stats").innerHTML = [["▱", data.length, "Projects", "Live capstone sites"], ["▥", new Set(data.map((p) => p.industry)).size, "Industries", "Diverse domain coverage"],
+    ["⊞", tables, "Data tables", "Across all datasets"], ["✓", `${done}/${data.length}`, "Completed", "Your progress on this device"]]
+    .map(([i, n, b, s]) => `<div class="stat"><div class="statIcon">${i}</div><div><strong>${n}</strong><b>${b}</b><small>${s}</small></div></div>`).join("");
+}
+function card(p) {
+  const fav = state.favorites.includes(p.id), cmp = state.compare.includes(p.id), st = state.status[p.id] || "Not started";
+  return `<article class="card" data-open="${esc(p.id)}" tabindex="0" role="link" aria-label="Open ${esc(p.name)} in a new tab">
+    <div class="cardImg"><img src="assets/${esc(p.img)}" alt="" loading="lazy"><div class="cardIcon" style="background:${esc(p.color)}">◈</div><span class="status st-${st.replace(/ /g, "").toLowerCase()}">${esc(st)}</span></div>
+    <div class="cardBody"><div class="cardName"><h4 title="${esc(p.name)}">${esc(p.name)}</h4><button class="star ${fav ? "on" : ""}" data-act="fav" data-id="${esc(p.id)}" title="${fav ? "Remove from favourites" : "Add to favourites"}" aria-pressed="${fav}">★</button></div>
+    <span class="tag">${esc(p.industry)}</span><p>${esc(p.desc)}</p>${p.size ? `<div class="size">${esc(p.size)}</div>` : ""}
+    <div class="toolTags">${(p.tools || []).map((t) => `<span>${esc(t)}</span>`).join("")}</div>
+    <div class="cardActions"><button class="openBtn" data-act="live" data-id="${esc(p.id)}">Open Project ↗</button><button class="ghost" data-act="details" data-id="${esc(p.id)}">Details</button><button class="compare ${cmp ? "on" : ""}" data-act="cmp" data-id="${esc(p.id)}" title="${cmp ? "Remove from compare" : "Add to compare (max 3)"}" aria-pressed="${cmp}">⚖</button></div></div></article>`;
+}
+function renderGrid() {
+  const list = filtered();
+  $("#listTitle").textContent = state.favOnly ? "Favourite Projects" : state.industry;
+  $("#grid").className = "grid" + (state.view === "list" ? " listView" : "");
+  document.querySelectorAll('[data-act="view"]').forEach((b) => b.classList.toggle("on", b.dataset.v === state.view));
+  $("#favToggle").classList.toggle("on", state.favOnly);
+  $("#selIndustry").value = state.industry; $("#selTool").value = state.tool; $("#selSort").value = state.sort;
+  const empty = !list.length ? `<div class="emptyState"><b>No projects match.</b><span>${state.favOnly ? "Star a project to add it to your favourites." : "Try another search or filter."}</span><button data-act="home">Show all projects</button></div>` : "";
+  $("#grid").innerHTML = empty + list.map(card).join("") + `<button class="newCard" data-act="add"><div>＋</div><b>Add New Project</b><span>Add a project link to your own library<br>(saved in this browser).</span></button>`;
+}
+function renderPanels() {
+  const rec = state.recent.map(byId).filter(Boolean);
+  $("#recentPanel").innerHTML = `<div class="panelTitle" id="recent"><h3>◷ Recently Opened</h3>${rec.length ? `<button data-act="clearRecent">Clear</button>` : ""}</div>
+    <div class="recentList">${rec.map((p) => `<button data-act="live" data-id="${esc(p.id)}" title="Open ${esc(p.name)} in a new tab"><img src="assets/${esc(p.img)}" alt=""><span><b>${esc(p.name)}</b><small>${esc(p.industry)} · open again ↗</small></span></button>`).join("") || '<p class="empty">Projects you open will appear here.</p>'}</div>`;
+  const cmp = state.compare.map(byId).filter(Boolean);
+  $("#comparePanel").innerHTML = `<div class="panelTitle"><h3>⚖ Compare Projects</h3><button data-act="compare" ${cmp.length < 2 ? "disabled" : ""}>Compare ${cmp.length ? "(" + cmp.length + ")" : ""}</button></div>
+    <p>Pick 2 or 3 projects with the ⚖ button on a card to compare their KPIs, tools and data model.</p>
+    <div class="chips">${cmp.map((p) => `<button data-act="cmp" data-id="${esc(p.id)}">${esc(p.name)} ×</button>`).join("") || '<span class="muted">No projects selected yet.</span>'}</div>`;
+}
+function renderRight() {
+  const data = all(); const n = data.length; const c = (s) => data.filter((p) => (state.status[p.id] || "Not started") === s).length;
+  const done = c("Completed"), prog = c("In progress"), not = n - done - prog, pct = n ? Math.round(done / n * 100) : 0;
+  $("#rightbar").innerHTML = `<div class="profile"><img class="avatarImg" src="${esc(PROFILE.photo)}" alt="${esc(PROFILE.name)}"><div><strong>${esc(PROFILE.name)}</strong><small>${esc(PROFILE.role)}</small></div></div>
+    <div class="socialLinks">${PROFILE.links.map((l) => `<a class="s-${l.k}" href="${esc(l.url)}" target="_blank" rel="noopener" title="${esc(l.label)}"><b>${esc(l.icon)}</b> <span>${esc(l.label)}</span></a>`).join("")}</div>
+    <section class="quick"><h3>📖 Quick Study</h3><p>${state.selected ? "Studying: " + esc(state.selected.name) : "Pick a topic, then choose a project, or press Details on any card."}</p>
+    ${TABS.map((x, i) => `<button data-act="quick" data-v="${esc(x)}"><i>${TAB_ICON[i]}</i><span><b>${esc(x)}</b><small>${esc(TAB_HINT[i])}</small></span><em>›</em></button>`).join("")}</section>
+    <section class="progress"><h3>📈 Learning Progress</h3><div class="progressBody"><div class="donut" style="--p:${pct}"><strong>${pct}%</strong><span>Completed</span></div>
+    <div><p><i class="dot green"></i>Completed <b>${done}</b></p><p><i class="dot blue"></i>In Progress <b>${prog}</b></p><p><i class="dot gray"></i>Not Started <b>${not}</b></p></div></div>
+    <div class="bar"><span style="width:${pct}%"></span></div><small>${n ? "Set a project's status in its Details. Opening a project marks it In Progress." : ""}</small></section>`;
+}
+function renderAll() { renderSidebar(); renderStats(); renderGrid(); renderPanels(); renderRight(); }
+
+/* ---------- modals ---------- */
+function overlay(id, inner) { document.querySelectorAll(".overlay").forEach((o) => o.remove()); document.body.insertAdjacentHTML("beforeend", `<div class="overlay" id="${id}" data-act="overlay"><div class="${id}" role="dialog" aria-modal="true">${inner}</div></div>`); document.body.classList.add("modalOpen"); setTimeout(() => { const f = document.querySelector(`#${id} .close`); f && f.focus(); }, 30); }
+function tabContent(p, tab) {
+  const box = (t, b) => `<div class="infoBox"><b>${esc(t)}</b><p>${esc(b)}</p></div>`;
+  const list = (t, arr) => `<div class="infoBox"><b>${esc(t)}</b><ul>${(arr || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>`;
+  const u = safeUrl(p.url);
+  switch (tab) {
+    case "Overview": return box("What the project is about", p.desc) + (p.size ? box("Dataset size", p.size) : "") + box("Tools", (p.tools || []).join(" · ")) + box("Learning goal", "Turn business questions into KPIs, validate them in SQL, build the Tableau and Power BI dashboards and present the insights.");
+    case "KPIs": return list("Core KPIs", p.kpis) + box("Where the full list is", "The live site's KPI Library has every KPI with its business question, formula, DAX and answer key.");
+    case "Data Model": return box("Model", p.model) + box("Where to see it", "The live site's Data Model page has the diagram, join guide and load order.");
+    case "Dashboard": return `<div class="infoBox"><b>Live project</b><p>The full interactive project: dashboards, KPI library, SQL practice and interview prep.</p>${u ? `<button class="primary" data-act="live" data-id="${esc(p.id)}">Open Project ↗</button>` : ""}</div><div class="infoBox"><b>URL</b><p class="mono">${esc(p.url)}</p></div>`;
+    case "SQL / Logic": return list("Core logic to practise", p.sql) + box("Practise", "Each live site has a SQL Lab and an in-browser SQL Practice Editor with daily problems.");
+    case "Key Insights": return list("Findings", p.insights) + box("Interview angle", "Say what the number is, why it moved, and what the business should do next.");
+    case "Case Study": return box("Approach", "Business problem → dataset → data model → KPIs → SQL validation → Tableau & Power BI dashboards → QA → insights → recommendations.") + box("Outcome", "A portfolio-ready project you can explain in a 90-second pitch.");
+    case "Notes": return `<div class="noteBox"><b>Your notes for ${esc(p.name)}</b><textarea id="notesArea" placeholder="Learning notes, interview points, questions…">${esc(state.notes[p.id] || "")}</textarea><span id="noteSaved">Saved in this browser only.</span></div>`;
+  }
+  return "";
+}
+function openDetails(id, tab) {
+  const p = byId(id); if (!p) return; state.selected = p; state.tab = tab || state.tab || "Overview"; const st = state.status[p.id] || "Not started";
+  overlay("detailModal", `<button class="close" data-act="close" aria-label="Close">×</button>
+    <div class="detailHero"><img src="assets/${esc(p.img)}" alt=""><div><span class="tag">${esc(p.industry)}</span><h2>${esc(p.name)}</h2><p>${esc(p.desc)}</p>
+    <div class="toolTags">${(p.tools || []).map((t) => `<span>${esc(t)}</span>`).join("")}</div>
+    <div class="detailActions"><button class="primary" data-act="live" data-id="${esc(p.id)}">Open Project ↗</button>
+    <label class="statusSel">My status <select data-act="status" data-id="${esc(p.id)}">${STATUS.map((s) => `<option ${s === st ? "selected" : ""}>${s}</option>`).join("")}</select></label>
+    ${String(p.id).startsWith("custom-") ? `<button class="danger" data-act="delCustom" data-id="${esc(p.id)}">Delete</button>` : ""}</div></div></div>
+    <div class="tabs" role="tablist">${TABS.map((t) => `<button role="tab" class="${state.tab === t ? "selected" : ""}" data-act="tab" data-v="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+    <div class="detailBody">${tabContent(p, state.tab)}</div>`);
+  renderRight();
+}
+function pickProject(tab) {
+  overlay("pickModal", `<button class="close" data-act="close" aria-label="Close">×</button><h2>${esc(tab)}: choose a project</h2>
+    <div class="pickList">${all().map((p) => `<button data-act="details" data-id="${esc(p.id)}" data-tab="${esc(tab)}"><img src="assets/${esc(p.img)}" alt=""><span><b>${esc(p.name)}</b><small>${esc(p.industry)}</small></span></button>`).join("")}</div>`);
+}
+function openCompare() {
+  const cmp = state.compare.map(byId).filter(Boolean);
+  overlay("compareModal", `<button class="close" data-act="close" aria-label="Close">×</button><h2>Compare Projects</h2><p>KPIs, tools, data size and model side by side.</p>
+    <div class="compareTable">${cmp.map((p) => `<div class="compareCol"><img src="assets/${esc(p.img)}" alt=""><h3>${esc(p.name)}</h3><span>${esc(p.industry)}</span>
+    <b>Dataset</b><p>${esc(p.size || "—")}</p><b>KPIs</b><p>${(p.kpis || []).map(esc).join(" · ")}</p><b>Tools</b><p>${(p.tools || []).map(esc).join(" · ")}</p><b>Model</b><p>${esc(p.model)}</p>
+    <div class="row"><button class="primary" data-act="live" data-id="${esc(p.id)}">Open ↗</button><button data-act="cmpRemove" data-id="${esc(p.id)}">Remove</button></div></div>`).join("")
+    || '<div class="emptyCompare">Choose 2 or 3 projects with the ⚖ button on the cards.</div>'}</div>`);
+}
+function openAdd() {
+  overlay("addModal", `<button class="close" data-act="close" aria-label="Close">×</button><h2>Add Project</h2><p>Add a live project link to your library. It is saved in this browser only.</p>
+    <form id="addForm"><label>Project name<input id="newName" required maxlength="60" placeholder="e.g. Banking Analytics"></label>
+    <label>Project URL<input id="newUrl" required type="url" placeholder="https://…"></label>
+    <label>Industry<select id="newIndustry">${NAV.slice(1).map(([n]) => `<option>${esc(n)}</option>`).join("")}<option>Other</option></select></label>
+    <label>Short description<input id="newDesc" maxlength="140" placeholder="What the project covers"></label>
+    <p class="formErr" id="formErr"></p><button class="primary" type="submit">Save Project</button></form>`);
+}
+function saveCustom() {
+  const name = $("#newName").value.trim(), url = safeUrl($("#newUrl").value.trim()), industry = $("#newIndustry").value, desc = $("#newDesc").value.trim();
+  if (!name || !url) { $("#formErr").textContent = "Enter a name and a full link starting with https://"; return; }
+  state.custom.push({ id: "custom-" + Date.now(), name, industry, desc: desc || "Custom project added to ProjectVault.", img: "marketing.jpg", color: "#2369ee", url, tools: [], size: "",
+    kpis: ["Add your KPIs in Notes"], model: "Add your data model in Notes", insights: ["Add your insights in Notes"], sql: ["Add your SQL logic in Notes"] });
+  save(); closeOverlays(); renderAll(); toast("Project added.");
+}
+
+/* ---------- events (one delegated listener) ---------- */
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("[data-act]");
+  if (!a) { const c = e.target.closest("[data-open]"); if (c) openLive(c.dataset.open); return; }
+  const act = a.dataset.act, id = a.dataset.id, v = a.dataset.v;
+  if (act === "overlay") { if (e.target === a) { closeOverlays(); renderRight(); } return; }
+  if (act === "home") { e.preventDefault(); goHome(); return; }
+  e.stopPropagation();
+  ({
+    live: () => openLive(id), fav: () => toggleFav(id), cmp: () => toggleCompare(id),
+    cmpRemove: () => { toggleCompare(id); openCompare(); },
+    details: () => openDetails(id, a.dataset.tab || "Overview"),
+    industry: () => { state.industry = v; state.favOnly = false; renderAll(); scrollToId("listTitle"); },
+    favOnly: () => { state.favOnly = !state.favOnly; renderAll(); scrollToId("listTitle"); },
+    goRecent: () => scrollToId("recent"), clearRecent: () => { state.recent = []; save(); renderAll(); },
+    compare: () => openCompare(), add: () => openAdd(),
+    notes: () => (state.selected ? openDetails(state.selected.id, "Notes") : pickProject("Notes")),
+    quick: () => (state.selected ? openDetails(state.selected.id, v) : pickProject(v)),
+    tab: () => openDetails(state.selected.id, v),
+    view: () => { state.view = v; save(); renderGrid(); },
+    close: () => { closeOverlays(); renderRight(); },
+    delCustom: () => { if (!confirm("Delete this project from your library?")) return; state.custom = state.custom.filter((p) => p.id !== id); state.favorites = state.favorites.filter((x) => x !== id); state.compare = state.compare.filter((x) => x !== id); state.recent = state.recent.filter((x) => x !== id); delete state.notes[id]; delete state.status[id]; save(); closeOverlays(); renderAll(); },
+  }[act] || (() => {}))();
+});
+document.addEventListener("change", (e) => {
+  const t = e.target;
+  if (t.id === "selIndustry") { state.industry = t.value; state.favOnly = false; renderAll(); }
+  else if (t.id === "selTool") { state.tool = t.value; renderGrid(); }
+  else if (t.id === "selSort") { state.sort = t.value; renderGrid(); }
+  else if (t.dataset.act === "status") { state.status[t.dataset.id] = t.value; save(); renderAll(); toast("Status saved: " + t.value); }
+});
+document.addEventListener("input", (e) => {
+  if (e.target.id === "search") { state.q = e.target.value; renderGrid(); }
+  if (e.target.id === "notesArea" && state.selected) { state.notes[state.selected.id] = e.target.value; save(); const s = $("#noteSaved"); if (s) s.textContent = "Saved ✓ (this browser only)"; renderSidebar(); }
+});
+document.addEventListener("submit", (e) => { if (e.target.id === "addForm") { e.preventDefault(); saveCustom(); } });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.querySelector(".overlay")) { closeOverlays(); renderRight(); }
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("[data-open]")) { e.preventDefault(); openLive(e.target.dataset.open); }
+  if (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { e.preventDefault(); $("#search").focus(); }
+});
+window.addEventListener("storage", () => { Object.assign(state, { favorites: LS.get("pv-fav", []), recent: LS.get("pv-recent", []), compare: LS.get("pv-compare", []), status: LS.get("pv-status", {}), custom: LS.get("pv-custom", []) }); renderAll(); });
+
+shell(); renderAll();
