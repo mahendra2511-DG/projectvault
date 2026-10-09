@@ -80,3 +80,10 @@ body.modalOpen{overflow:hidden}
 .detailActions .primary{width:auto;height:auto;font-size:14px;padding:10px 18px}
 @media(max-width:600px){.stats{grid-template-columns:1fr 1fr !important}.stat{padding:12px}.stat strong{font-size:22px}.stat small{display:none}}
 .hero p{max-width:520px}
+/* light tinted project cards (each in its own project colour) */
+.card{background:linear-gradient(180deg,color-mix(in srgb,var(--c,#1768ed) 7%,#fff),color-mix(in srgb,var(--c,#1768ed) 3%,#fff));border-color:color-mix(in srgb,var(--c,#1768ed) 22%,#fff)}
+.card:hover{border-color:color-mix(in srgb,var(--c,#1768ed) 45%,#fff);box-shadow:0 12px 28px color-mix(in srgb,var(--c,#1768ed) 18%,transparent)}
+.card .tag{background:color-mix(in srgb,var(--c,#1768ed) 14%,#fff);color:color-mix(in srgb,var(--c,#1768ed) 75%,#0b1a3a)}
+.card .toolTags span{background:#ffffffcc}
+.card .cardActions .ghost{background:#ffffffcc}
+.newCard{background:#f7faffcc}

@@ -193,7 +193,7 @@ function renderStats() {
 }
 function card(p) {
   const fav = state.favorites.includes(p.id), cmp = state.compare.includes(p.id), st = state.status[p.id] || "Not started";
-  return `<article class="card" data-open="${esc(p.id)}" tabindex="0" role="link" aria-label="Open ${esc(p.name)} in a new tab">
+  return `<article class="card" style="--c:${esc(p.color || "#1768ed")}" data-open="${esc(p.id)}" tabindex="0" role="link" aria-label="Open ${esc(p.name)} in a new tab">
     <div class="cardImg"><img src="assets/${esc(p.img)}" alt="" loading="lazy"><div class="cardIcon" style="background:${esc(p.color)}">◈</div><span class="status st-${st.replace(/ /g, "").toLowerCase()}">${esc(st)}</span></div>
     <div class="cardBody"><div class="cardName"><h4 title="${esc(p.name)}">${esc(p.name)}</h4><button class="star ${fav ? "on" : ""}" data-act="fav" data-id="${esc(p.id)}" title="${fav ? "Remove from favourites" : "Add to favourites"}" aria-pressed="${fav}">★</button></div>
     <span class="tag">${esc(p.industry)}</span><p>${esc(p.desc)}</p>${p.size ? `<div class="size">${esc(p.size)}</div>` : ""}
