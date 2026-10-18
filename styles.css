@@ -87,3 +87,10 @@ body.modalOpen{overflow:hidden}
 .card .toolTags span{background:#ffffffcc}
 .card .cardActions .ghost{background:#ffffffcc}
 .newCard{background:#f7faffcc}
+
+/* ===== v5: sidebar logo spacing + trainer dashboard link ===== */
+.sidebar .brand.brandButton{padding:8px 12px 18px;margin:0 0 10px;border-bottom:1px solid #e4ebf6;border-radius:0;gap:12px}
+.sidebar .brand.brandButton .brandCube{flex:none}
+.sidebar .brand small{margin-top:3px;line-height:1.3}
+.utility.trainerLink{margin-top:8px;background:linear-gradient(135deg,#eef4ff,#f3efff);border:1px solid #d9e3fb;color:#1d3f91}
+.utility.trainerLink:hover{background:#e3edff}

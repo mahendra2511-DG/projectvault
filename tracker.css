@@ -1,0 +1,54 @@
+:root{--blue:#1768ed;--ink:#15245a;--muted:#6c7896;--line:#e2e9f5;--bg:#f5f8fe;--card:#fff;--ok:#16a34a;--bad:#dc2626;--pend:#cbd5e1}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}a{color:inherit}
+#trk{max-width:1400px;margin:0 auto;padding:0 20px 40px}
+.tk-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px 0;border-bottom:1px solid var(--line);margin-bottom:16px;position:sticky;top:0;background:var(--bg);z-index:5}
+.tk-brand{display:flex;align-items:center;gap:12px;text-decoration:none}.tk-brand b{font-size:22px;letter-spacing:-.8px;display:block;line-height:1.1}.tk-brand b i{font-style:normal;color:var(--blue)}.tk-brand small{font-size:12px;color:var(--muted);font-weight:600}
+.tk-cube{width:34px;height:40px;background:linear-gradient(135deg,#27a6ff,#1266dc);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);flex:none}
+.tk-ctrl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}.tk-ctrl select{height:34px;border:1px solid #d9e4f4;border-radius:8px;padding:0 8px;background:#fff;color:var(--ink)}
+.tk-btn{height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--blue);background:var(--blue);color:#fff;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap}
+.tk-btn.ghost{background:#fff;color:var(--blue);border-color:#cfe0f7}.tk-btn[disabled]{opacity:.6;cursor:wait}
+.tk-chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+.tk-muted{color:var(--muted);font-size:12px;font-weight:400}
+.tk-alert{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:14px}
+.tk-note{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:8px 12px;margin:-4px 0 14px;font-size:12.5px;line-height:1.5}
+.tk-login{max-width:420px;margin:60px auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:0 12px 40px #1a3c7a14}
+.tk-login h2{margin:0 0 6px}.tk-login p{font-size:13.5px;color:var(--muted);line-height:1.5;margin:0 0 14px}
+.tk-login label{display:block;font-size:12px;font-weight:700;margin:12px 0}.tk-login input{display:block;width:100%;height:42px;border:1px solid #d9e4f4;border-radius:9px;padding:0 12px;margin-top:6px;outline:none}.tk-login input:focus{border-color:var(--blue)}
+.tk-login .tk-btn{width:100%;height:42px;justify-content:center;margin-top:6px}.tk-login small{display:block;margin-top:12px;font-size:11.5px;color:var(--muted)}
+.tk-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.tk-kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 5px 16px #30598f0b}.tk-kpi b{display:block;font-size:26px;line-height:1.1}.tk-kpi span{display:block;font-size:12.5px;font-weight:700;margin-top:4px}.tk-kpi small{display:block;font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tk-sites{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tk-site{border:1px solid #d9e4f4;background:#fff;border-radius:20px;padding:5px 12px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--ink);box-shadow:inset 0 -3px 0 var(--c,transparent)}.tk-site small{color:var(--muted);font-weight:500;margin-left:4px}.tk-site.on{background:#e6f0ff;border-color:var(--blue)}
+.tk-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;overflow-x:auto}.tk-tabs button{border:0;background:none;padding:10px 14px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}.tk-tabs button.on{color:var(--blue);border-bottom-color:var(--blue)}
+.tk-tabs.small button{font-size:13px;padding:8px 12px}
+.tk-body h3{font-size:16px;margin:18px 0 10px}.tk-body h3:first-child{margin-top:4px}
+.tk-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.tk-card{background:#fff;border:1px solid var(--line);border-top:4px solid var(--c);border-radius:12px;padding:14px;cursor:pointer;box-shadow:0 5px 16px #30598f0b;transition:.15s}.tk-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px #30598f1a}
+.tk-ch{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.tk-ch b{font-size:18px}.tk-ch span{font-size:12px;color:var(--muted);text-align:right}
+.tk-cs{font-size:13px;font-weight:600;margin:4px 0 10px}.tk-cc{display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;margin-bottom:6px}.tk-cc .ok{color:#15803d}.tk-cc .pe{color:#64748b}.tk-cc .ab{color:#b91c1c}
+.tk-cf{font-size:12.5px;margin-top:10px;padding-top:8px;border-top:1px solid #eef2f8}
+.tk-sbar{display:inline-flex;width:84px;height:8px;background:var(--pend);border-radius:4px;overflow:hidden;vertical-align:middle}.tk-sbar i{display:block;height:100%}.tk-sbar .d{background:var(--ok)}.tk-sbar .a{background:var(--bad)}.tk-sn{font-size:12px;margin-left:6px;font-variant-numeric:tabular-nums}
+.tk-card .tk-sbar{width:100%;height:10px;margin:4px 0}.tk-card .tk-sn{display:none}
+.tk-empty{color:var(--muted);font-size:13.5px;padding:10px 0}
+.tk-tablewrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;max-height:70vh}
+.tk-table{border-collapse:collapse;width:100%;font-size:13px}.tk-table th{position:sticky;top:0;background:#f4f7fc;text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:#4a5b80;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:1}
+.tk-table td{padding:9px 10px;border-bottom:1px solid #eef2f8;vertical-align:top;white-space:nowrap}.tk-table td.n{text-align:right;font-variant-numeric:tabular-nums}.tk-table td.c{text-align:center}.tk-table td.tk-wrap{white-space:normal;min-width:140px;max-width:260px}
+.tk-table tbody tr[data-open]{cursor:pointer}.tk-table tbody tr[data-open]:hover td{background:#f5f9ff}.tk-table tr.tot td{font-weight:700;background:#fafcff}
+.tk-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
+.tk-today{font-size:10.5px;background:#dcfce7;color:#166534;border-radius:10px;padding:1px 6px;font-weight:700}
+.tk-row{display:flex;gap:12px;align-items:center;margin-bottom:10px;flex-wrap:wrap}.tk-row input[type=search]{flex:1;min-width:220px;height:38px;border:1px solid #d9e4f4;border-radius:9px;padding:0 12px;outline:none}
+.tk-spark{display:inline-flex;gap:1px;vertical-align:middle}.tk-spark i{width:4px;height:14px;background:#e8eef7;border-radius:1px}.tk-spark i.on{background:var(--blue)}
+.tk-chart{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px}.tk-chart svg{width:100%;height:auto;display:block}
+.tk-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-top:8px}.tk-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.tk-ov{position:fixed;inset:0;background:#11245266;backdrop-filter:blur(3px);z-index:20;display:flex;justify-content:flex-end}
+.tk-drawer{width:min(1100px,100%);height:100%;background:var(--bg);overflow:auto;padding:22px 24px;position:relative;box-shadow:-20px 0 60px #0b1d4a33}
+.tk-x{position:absolute;right:16px;top:14px;width:34px;height:34px;border-radius:50%;border:0;background:#e8eef8;font-size:16px;cursor:pointer}
+.tk-dh{border-left:5px solid var(--c);padding:4px 0 4px 14px;margin-bottom:12px}.tk-dh b{font-size:24px}.tk-dh>span{color:var(--muted);font-weight:600;margin-left:6px}.tk-dh .tk-muted{margin:6px 0 10px;font-size:13px}
+.tk-att th,.tk-att td.c{text-align:center;padding:6px 4px;min-width:30px}.tk-att th.pres,.tk-att td.pres{background:#eef4ff}.tk-att td.c{color:var(--blue);font-size:15px}
+.tk-mx td.c{font-size:15px}
+@media(max-width:1100px){.tk-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){#trk{padding:0 12px 30px}.tk-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.tk-top{position:static}.tk-drawer{padding:16px}.tk-cards{grid-template-columns:1fr}}
+
+.tk-table .tk-sbar{width:56px}.tk-table td,.tk-table th{padding:8px 8px}
+.tk-att .stk{position:sticky;left:0;z-index:2;background:#fff;text-align:left;min-width:150px;box-shadow:1px 0 0 var(--line)}.tk-att thead .stk{background:#f4f7fc;z-index:3}.tk-att tr.tot .stk{background:#fafcff}

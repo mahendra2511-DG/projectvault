@@ -182,7 +182,8 @@ function renderSidebar() {
     <button class="utility ${state.favOnly ? "active" : ""}" data-act="favOnly"><span class="iconGlyph">★</span><span>Favourites</span><small>${state.favorites.length}</small></button>
     <button class="utility" data-act="goRecent"><span class="iconGlyph">◷</span><span>Recently Opened</span><small>${state.recent.length}</small></button>
     <button class="utility" data-act="compare"><span class="iconGlyph">⚖</span><span>Compare Projects</span><small>${state.compare.length}</small></button>
-    <button class="utility" data-act="notes"><span class="iconGlyph">▤</span><span>Notes</span><small>${Object.values(state.notes).filter((v) => v && v.trim()).length || ""}</small></button>`;
+    <button class="utility" data-act="notes"><span class="iconGlyph">▤</span><span>Notes</span><small>${Object.values(state.notes).filter((v) => v && v.trim()).length || ""}</small></button>
+    <a class="utility trainerLink" href="tracker.html" title="Attendance and group presentation status of all projects (trainer login)"><span class="iconGlyph">📊</span><span>Trainer Dashboard</span><small>🔒</small></a>`;
 }
 function renderStats() {
   const data = all(); const done = data.filter((p) => state.status[p.id] === "Completed").length;
