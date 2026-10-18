@@ -75,7 +75,8 @@ function row(s, probe, rep) {
   if (probe.j.configured === false) return Object.assign(base, { state: "nodb", error: "Live database (Upstash) not connected on this site" });
   base.projects = Array.isArray(probe.j.projects) ? probe.j.projects : [];
   if (rep) {
-    if (rep.j && rep.j.ok) base.report = { today: rep.j.today, unique: rep.j.unique, views: rep.j.views, daily: rep.j.daily || [], students: (rep.j.students || []).map(x => ({ name: x.name, group: x.group, batch: x.batch, last4: x.last4, uid: x.uid, first: x.first, last: x.last, views: x.views, days: x.days || [], lastPage: x.lastPage })) };
+    if (rep.j && rep.j.ok) base.report = { today: rep.j.today, unique: rep.j.unique, views: rep.j.views, daily: rep.j.daily || [], students: (rep.j.students || []).map(x => ({ name: x.name, group: x.group, batch: x.batch, last4: x.last4, uid: x.uid, first: x.first, last: x.last, views: x.views, days: x.days || [], lastPage: x.lastPage })),
+      progress: Object.fromEntries(Object.entries(rep.j.progress || {}).slice(0, 3000).map(([k, v]) => [k, { pct: v && v.pct, sql: v && v.sql, ts: v && v.ts }])) };
     else Object.assign(base, { state: "auth", error: (rep.j && rep.j.error) || "Report failed (password on this site may be different)" });
   }
   return base;
