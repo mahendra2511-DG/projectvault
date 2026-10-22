@@ -4,7 +4,7 @@
 (function () {
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const COLORS = { marketing: "#d92d8a", hr: "#7357e8", crm: "#16a89a", hospitality: "#c88b12", manufacturing: "#f4a500", swiggy: "#ff6b16", ecommerce: "#f04478", "supply-chain": "#1266d6", healthcare: "#18a8e8", insurance: "#1d70e8", stock: "#159a69" };
+  const COLORS = { marketing: "#d92d8a", hr: "#7357e8", crm: "#16a89a", hospitality: "#c88b12", manufacturing: "#f4a500", swiggy: "#ff6b16", ecommerce: "#f04478", "supply-chain": "#1266d6", healthcare: "#18a8e8", insurance: "#1d70e8", stock: "#159a69", payflow: "#2563eb" };
   const STAGES = [["kickoff", "Kick-off", 0], ["excel", "Excel", 1], ["tableau", "Tableau", 2], ["powerbi", "Power BI", 3], ["final", "Final", 4]];
   const COLS = [["excel", "Excel"], ["tableau", "Tableau"], ["powerbi", "Power BI"], ["sqlqa", "SQL QA"], ["final", "Final"]];
   const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -88,13 +88,17 @@
     S.loading = false; render(); schedule();
   }
   function refresh() { const u = ss.get("pvt_u"), p = ss.get("pvt_p"); if (u && p) load(u, p); }
-  function schedule() { clearInterval(timer); if (S.auto && S.data) timer = setInterval(() => { if (document.visibilityState === "visible" && !S.loading) refresh(); }, 120000); }
+  /* auto-refresh only 5 times a day (each refresh reads every site's database): 9 AM, 12 PM, 3 PM, 6 PM, 9 PM */
+  const SLOTS = [9, 12, 15, 18, 21];
+  function lastSlot() { const n = new Date(); const h = SLOTS.filter(x => x <= n.getHours()).pop(); if (h == null) return 0; const d = new Date(n); d.setHours(h, 0, 0, 0); return d.getTime(); }
+  function schedule() { clearInterval(timer); if (S.auto && S.data) timer = setInterval(() => { const ls2 = lastSlot(); if (ls2 && S.data.checkedAt < ls2 && document.visibilityState === "visible" && !S.loading) refresh(); }, 60000); }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S.auto && S.data && !S.loading && S.data.checkedAt < lastSlot()) refresh(); });
 
 
   /* ================= helpers for the UI ================= */
   const siteColor = (id) => COLORS[id] || "#64748b";
   const dot = (id) => `<span class="dot" style="background:${siteColor(id)}" aria-hidden="true"></span>`;
-  const STATE = { ok: ["Connected", "ok"], nodb: ["No database", "warn"], down: ["Offline", "bad"], auth: ["Login failed", "bad"] };
+  const STATE = { ok: ["Connected", "ok"], nodb: ["No database", "warn"], down: ["Offline", "bad"], auth: ["Login failed", "bad"], error: ["Database error", "bad"] };
   const rel = (ts) => { const m = Math.round((Date.now() - ts) / 60000); return m < 1 ? "just now" : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.floor(m / 60)} h ago` : `${Math.floor(m / 1440)} d ago`; };
   function sessionState(p, date) {
     const [a, b] = times(p); const at = (hm) => { const d = parse(date); const [h, m] = hm.split(":").map(Number); d.setHours(h, m, 0, 0); return d; };
@@ -123,8 +127,8 @@
         <a class="brand" href="./" title="Back to ProjectVault"><span class="cube" aria-hidden="true"></span><span><b>Project<i>Vault</i></b><small>Trainer Dashboard</small></span></a>
         ${logged ? `<div class="tools" role="toolbar" aria-label="Dashboard controls">
           <label class="fld"><span>Range</span><select id="tk-days" aria-label="Date range">${[7, 14, 30, 60, 90].map(d => `<option value="${d}" ${+S.days === d ? "selected" : ""}>Last ${d} days</option>`).join("")}</select></label>
-          <label class="switch" title="Reload data from all sites every 2 minutes while this tab is open"><input type="checkbox" id="tk-auto" ${S.auto ? "checked" : ""}><span class="knob" aria-hidden="true"></span>Auto-refresh</label>
-          <span class="upd" id="tk-upd" title="${esc(new Date(S.data.checkedAt).toLocaleString("en-IN"))}">${S.loading ? `<span class="spin" aria-hidden="true"></span>Refreshing…` : `Updated ${esc(new Date(S.data.checkedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }))} · ${rel(S.data.checkedAt)}${S.auto ? " · auto every 2 min" : ""}`}</span>
+          <label class="switch" title="Reload data from all sites automatically at 9 AM, 12 PM, 3 PM, 6 PM and 9 PM while this tab is open. Use Refresh any time."><input type="checkbox" id="tk-auto" ${S.auto ? "checked" : ""}><span class="knob" aria-hidden="true"></span>Auto-refresh</label>
+          <span class="upd" id="tk-upd" title="${esc(new Date(S.data.checkedAt).toLocaleString("en-IN"))}">${S.loading ? `<span class="spin" aria-hidden="true"></span>Refreshing…` : `Updated ${esc(new Date(S.data.checkedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }))} · ${rel(S.data.checkedAt)}${S.auto ? " · auto 5×/day" : ""}`}</span>
           <button class="btn" id="tk-ref" ${S.loading ? "disabled aria-busy=\"true\"" : ""} title="Reload data from all sites now">↻ Refresh</button>
           <button class="btn ghost" id="tk-csv" title="Download students and day-by-day check-ins for the selected range and site filter">⬇ Export CSV</button>
           <button class="btn ghost" id="tk-out">Log out</button></div>` : ""}
@@ -166,7 +170,7 @@
     // operational exceptions (from existing data only)
     const exc = [];
     const bad = S.data.sites.filter(s => s.state !== "ok" && inSite(s.id));
-    if (bad.length) exc.push(["warn", `${bad.length} site${bad.length > 1 ? "s" : ""} not reporting`, bad.map(s => `${s.name}: ${STATE[s.state] ? STATE[s.state][0] : s.state}`).join(" · ")]);
+    if (bad.length) exc.push([bad.some(s => s.state === "error") ? "bad" : "warn", `${bad.length} site${bad.length > 1 ? "s" : ""} not reporting`, bad.map(s => `${s.name}: ${s.state === "error" ? s.error : STATE[s.state] ? STATE[s.state][0] : s.state}`).join(" · ")]);
     tk.forEach(x => { const [st] = sessionState(x.p, t); const c = counts(x.p, x.todayStage.key); if (st === "ended" && c.pending) exc.push(["bad", `${x.p.code}: ${c.pending} group${c.pending > 1 ? "s" : ""} not marked`, `${x.todayStage.label} session has ended (${x.site.name}). Update the status on the site.`]); });
     if (pres.abs) exc.push(["bad", `${pres.abs} group${pres.abs > 1 ? "s" : ""} marked absent today`, tk.filter(x => counts(x.p, x.todayStage.key).absent).map(x => x.p.code).join(", ")]);
     const tabs = [["today", "Today & upcoming", todays.length], ["projects", "Project codes", live.length], ["students", "Students", studs.length], ["visits", "Daily visits", null]];
@@ -395,7 +399,7 @@
     if (S.sitesOpen || S.colsOpen) { S.sitesOpen = false; S.colsOpen = false; render(); const b = $("#tk-sites"); if (b) b.focus(); }
     else if (S.open) { $("#tk-close") && $("#tk-close").click(); }
   });
-  setInterval(() => { const u = $("#tk-upd"); if (u && S.data && !S.loading) u.textContent = `Updated ${new Date(S.data.checkedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} · ${rel(S.data.checkedAt)}${S.auto ? " · auto every 2 min" : ""}`; }, 30000);
+  setInterval(() => { const u = $("#tk-upd"); if (u && S.data && !S.loading) u.textContent = `Updated ${new Date(S.data.checkedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} · ${rel(S.data.checkedAt)}${S.auto ? " · auto 5×/day" : ""}`; }, 30000);
   render();
   if (ss.get("pvt_u") && ss.get("pvt_p")) refresh();
 })();

@@ -3,7 +3,7 @@
 Static site (HTML + CSS + JS, no build step). Deploy: push this folder to a GitHub repo → Vercel → Add New Project → Import → Deploy. Every push to `main` redeploys.
 
 ## Edit projects
-All 11 projects are in the `PROJECTS` list at the top of `app.js` (name, live URL, image, KPIs, data model, SQL topics, insights). Profile name, photo and social links are in `PROFILE`.
+All 12 projects are in the `PROJECTS` list at the top of `app.js` (name, live URL, image, KPIs, data model, SQL topics, insights). Profile name, photo and social links are in `PROFILE`.
 
 ## What works
 - Click a project card (or **Open Project ↗**) → the live project opens in a new tab.
@@ -14,9 +14,9 @@ All 11 projects are in the `PROJECTS` list at the top of `app.js` (name, live UR
 
 ## Trainer Dashboard (tracker.html)
 Sidebar → **Trainer Dashboard** (or open `/tracker.html`). Log in with the same trainer username + password as on the project sites.
-- Trainer-only operations view. Shows, live from all 11 project sites: today's presentations (groups presented / pending / absent), the next 7 days, every project code with group status per stage (Excel, Tableau, Power BI, SQL QA, Final), students per project code and group, and day-by-day attendance (site check-ins), with CSV export.
+- Trainer-only operations view. Shows, live from all 12 project sites: today's presentations (groups presented / pending / absent), the next 7 days, every project code with group status per stage (Excel, Tableau, Power BI, SQL QA, Final), students per project code and group, and day-by-day attendance (site check-ins), with CSV export.
 - `api/hub.js` reads each site's own `/api/schedule` from the server. Nothing new is stored. The list of sites is at the top of `api/hub.js` (update it if a site URL changes), or set env `HUB_SITES` in Vercel.
 - A site shows 🟠 until its Upstash database is connected, and 🔴 if it can't be reached.
 - If you change the trainer password on one site only, that site shows 🔒 here; keep the same password on all sites.
-- Controls: date range (7–90 days), auto-refresh every 2 minutes (toggle), Refresh, Export CSV (students + day-by-day check-ins + site progress for the current site filter), searchable site filter, sortable tables, column picker on Project codes, student filters (project code, group, activity).
+- Controls: date range (7–90 days), auto-refresh 5 times a day at 9 AM, 12 PM, 3 PM, 6 PM, 9 PM (toggle), Refresh, Export CSV (students + day-by-day check-ins + site progress for the current site filter), searchable site filter, sortable tables, column picker on Project codes, student filters (project code, group, activity).
 - "Needs attention" chips appear for sites not reporting, sessions that ended with groups still unmarked, and groups marked absent today.

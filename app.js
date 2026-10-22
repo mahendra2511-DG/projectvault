@@ -85,6 +85,13 @@ const PROJECTS = [
     model: "Fact_Orders is the hub, joined to Customer, Product, Supplier and Warehouse. Fact_Inventory shares only Product and Warehouse: never join the two facts directly.",
     sql: ["Revenue and gross margin by tier", "On-time delivery and delay days", "Supplier scorecards", "Inventory snapshots (don't sum them like sales)"],
     insights: ["Revenue is $187.98M", "Average delay counts only rows with Delay_Days above 0", "Inventory snapshots summed like sales make stock look inflated"] },
+  { id: "payflow", tables: 18, name: "PayFlow Fintech Analytics", industry: "Fintech", img: "payflow.jpg", color: "#2563eb", url: "https://fintechpayflow.vercel.app/",
+    desc: "Payments data for PayFlow, a merchant payment gateway: transactions, refunds, disputes, fraud cases and settlements.",
+    tools: STD_TOOLS, size: "18 tables · 306,141 payment attempts · 820 merchants",
+    kpis: ["Total Payment Volume (TPV)", "Processing Revenue", "Payment Success Rate", "Merchant Activation Rate", "Refund Rate", "Confirmed Fraud Rate"],
+    model: "fact_payment sits at the centre; refunds, disputes, fraud cases, settlements and settlement lines are child facts, with shared date, merchant, payment-method, status, customer and risk dimensions.",
+    sql: ["TPV and revenue by merchant and month", "Success rate by payment method", "Refunds and disputes against original payments", "Settlement reconciliation"],
+    insights: ["Count payment intents, not retry attempts", "Refunds and disputes link back to the original payment", "47 KPIs across Merchant 360° and Fraud & Risk dashboards"] },
   { id: "marketing", tables: 9, name: "AXon Marketing Analytics", industry: "Marketing", img: "marketing.jpg", color: "#d92d8a", url: "https://marketingpr.vercel.app/",
     desc: "Email, Facebook, Instagram, WhatsApp and website data for AXon Retail, 2023–2024.",
     tools: STD_TOOLS, size: "9 tables · 313,895 email events · 103 campaigns",
@@ -93,7 +100,7 @@ const PROJECTS = [
     sql: ["Unique opens and clicks per campaign", "Channel funnel from send to conversion", "Top performing campaigns", "Web visitors and bounce rate"],
     insights: ["Count unique opens, not every open event", "Each channel has its own grain: compare rates, not raw counts", "60 KPIs across email, social, WhatsApp and web"] },
 ];
-const NAV = [["All Projects", "▦"], ["Healthcare", "✚"], ["Manufacturing", "⚙"], ["CRM", "🤝"], ["HR", "👥"], ["E-Commerce", "🛒"], ["Food Delivery", "🛵"], ["Finance / Stock", "↗"], ["Insurance", "🛡"], ["Hospitality", "🏨"], ["Supply Chain", "🚚"], ["Marketing", "📣"]];
+const NAV = [["All Projects", "▦"], ["Healthcare", "✚"], ["Manufacturing", "⚙"], ["CRM", "🤝"], ["HR", "👥"], ["E-Commerce", "🛒"], ["Food Delivery", "🛵"], ["Finance / Stock", "↗"], ["Insurance", "🛡"], ["Hospitality", "🏨"], ["Supply Chain", "🚚"], ["Marketing", "📣"], ["Fintech", "💳"]];
 const TABS = ["Overview", "KPIs", "Data Model", "Dashboard", "SQL / Logic", "Key Insights", "Case Study", "Notes"];
 const TAB_HINT = ["Business problem & scope", "Key metrics", "Tables & relationships", "Open the live project", "Key queries & calculations", "Business findings", "Approach & outcome", "Your notes for this project"];
 const TAB_ICON = ["✦", "⌁", "⊞", "▣", "⌘", "♨", "⚑", "▤"];
@@ -122,7 +129,7 @@ const safeUrl = (u) => { try { const x = new URL(u); return /^https?:$/.test(x.p
 /* ---------- actions ---------- */
 function touchRecent(id) { state.recent = [id, ...state.recent.filter((x) => x !== id)].slice(0, 6); save(); }
 function openLive(id) {
-  const p = byId(id); if (!p) return; const u = safeUrl(p.url); if (!u) return;
+  const p = byId(id); if (!p) return; const u = safeUrl(p.url); if (!u) { toast(`${p.name}: live link coming soon.`); return; }
   touchRecent(id); if (!state.status[id]) state.status[id] = "In progress"; save();
   window.open(u, "_blank", "noopener"); renderAll();
 }
@@ -160,7 +167,7 @@ function shell() {
     <div class="sidebarBottom"><b>💡 Learn. Build. Grow.</b><span>All Data Analyst capstone projects<br>in one place.</span></div>
   </aside>
   <section class="main">
-    <header class="hero"><div><h1>Project<span>Vault</span></h1><h2>My Analytics &amp; Digital Project Library</h2><p>End-to-end Data Analyst capstone projects across 11 industries: Excel, SQL, Tableau and Power BI on real-style business data. Click a project to open its live site.</p></div><div class="heroArt"><div class="mountain"></div><div class="miniChart"><span></span><span></span><span></span><span></span><span></span></div></div></header>
+    <header class="hero"><div><h1>Project<span>Vault</span></h1><h2>My Analytics &amp; Digital Project Library</h2><p>End-to-end Data Analyst capstone projects across 12 industries: Excel, SQL, Tableau and Power BI on real-style business data. Click a project to open its live site.</p></div><div class="heroArt"><div class="mountain"></div><div class="miniChart"><span></span><span></span><span></span><span></span><span></span></div></div></header>
     <div class="toolbar"><div class="search"><span>⌕</span><input id="search" type="search" placeholder="Search projects, KPIs or tools (e.g. RevPAR, attrition, Snowflake)" aria-label="Search projects"></div>
       <select id="selIndustry" aria-label="Industry"></select>
       <select id="selTool" aria-label="Tool">${tools.map((x) => `<option>${esc(x)}</option>`).join("")}</select>
