@@ -60,7 +60,7 @@
         else { o.days = [...new Set([...o.days, ...s.days])].sort(); o.devices++; o.views += s.views; o.first = Math.min(o.first || s.first, s.first || o.first); if (s.last > o.last) { o.last = s.last; o.name = s.name; o.group = s.group; o.batch = s.batch; o.lastPage = s.lastPage; } }
       });
       const prog = (rep && rep.progress) || {};
-      const studs = [...byKey.values()]; studs.forEach(s => { const pr = prog[(String(s.name).toLowerCase() + "|" + String(s.group || "").toLowerCase()).replace(/\s+/g, " ").trim()]; s.prog = pr && (pr.pct != null || pr.sql != null) ? pr : null; });
+      const studs = [...byKey.values()]; studs.forEach(s => { const pr = prog[(String(s.name).toLowerCase() + "|" + String(s.group || "").toLowerCase()).replace(/\s+/g, " ").trim()]; s.prog = pr && (pr.pct != null || pr.sql != null || pr.rv != null || pr.viva != null || pr.cert) ? pr : null; });
       students.push(...studs);
       site.projects.forEach(p => {
         const ds = stageDates(p), nx = nextStage(p), todayStage = STAGES.find(([k]) => ds[k] === t);
@@ -265,7 +265,7 @@
       && (S.fAct === "all" || (S.fAct === "today" ? s.days.includes(t) : S.fAct === "week" ? s.days.some(d => d >= addDays(t, -6)) : !s.days.some(d => d >= addDays(t, -6))))
       && (!q || [s.name, s.group, s.batch, s.last4, s.siteName].join(" ").toLowerCase().includes(q)));
     const inR = (s) => s.days.filter(d => d >= ds[0]).length;
-    const key = { name: s => s.name.toLowerCase(), site: s => s.siteName, code: s => s.batch || "", group: s => s.group || "", prog: s => s.prog && s.prog.pct != null ? +s.prog.pct : -1, sql: s => s.prog && s.prog.sql != null ? +s.prog.sql : -1, days: inR, last: s => s.last || 0 }[S.ssort[0]] || (s => s.last);
+    const key = { name: s => s.name.toLowerCase(), site: s => s.siteName, code: s => s.batch || "", group: s => s.group || "", prog: s => s.prog && s.prog.pct != null ? +s.prog.pct : -1, sql: s => s.prog && s.prog.sql != null ? +s.prog.sql : -1, rv: s => s.prog && s.prog.rv != null ? +s.prog.rv : -1, viva: s => s.prog && s.prog.viva != null ? +s.prog.viva : -1, cert: s => s.prog && s.prog.cert ? 1 : 0, days: inR, last: s => s.last || 0 }[S.ssort[0]] || (s => s.last);
     list = list.slice().sort((a, b) => { const A = key(a), B = key(b); return (A > B ? 1 : A < B ? -1 : 0) * S.ssort[1]; });
     const opt = (v, cur, l) => `<option value="${esc(v)}" ${cur === v ? "selected" : ""}>${esc(l || v)}</option>`;
     return `<div class="bar2"><input id="tk-q" type="search" placeholder="Search name, group, project code or last 4 mobile digits…" value="${esc(S.q)}" aria-label="Search students">
@@ -273,18 +273,33 @@
         <select id="tk-fgroup" aria-label="Group">${opt("all", S.fGroup, "All groups")}${groups.map(g => opt(g, S.fGroup)).join("")}</select>
         <select id="tk-fact" aria-label="Activity">${opt("all", S.fAct, "Any activity")}${opt("today", S.fAct, "Checked in today")}${opt("week", S.fAct, "Active last 7 days")}${opt("idle", S.fAct, "Inactive 7+ days")}</select>
         <span class="muted">${list.length} of ${base.length}</span></div>
+      ${weakGroups(list)}
       ${list.length ? `<div class="twrap tall"><table class="tbl"><thead><tr>${th(S.ssort, "name", "Student", "stick")}${th(S.ssort, "site", "Site")}${th(S.ssort, "code", "Project code")}${th(S.ssort, "group", "Group")}
-        ${th(S.ssort, "prog", "Site progress")}${th(S.ssort, "sql", "SQL solved", "r")}${th(S.ssort, "days", `Days (${S.days}d)`, "r")}<th scope="col">Check-ins</th>${th(S.ssort, "last", "Last visit")}<th scope="col"><span class="sr">Actions</span></th></tr></thead><tbody>
+        ${th(S.ssort, "prog", "Site progress")}${th(S.ssort, "sql", "SQL solved", "r")}${th(S.ssort, "rv", "Dashboard score", "r")}${th(S.ssort, "viva", "Mock viva", "r")}${th(S.ssort, "cert", "Certificate")}${th(S.ssort, "days", `Days (${S.days}d)`, "r")}<th scope="col">Check-ins</th>${th(S.ssort, "last", "Last visit")}<th scope="col"><span class="sr">Actions</span></th></tr></thead><tbody>
         ${list.slice(0, 500).map(s => { const idle = !s.days.some(d => d >= addDays(t, -6)); const pid = esc(s.site + "|" + (M.projects.find(x => x.site.id === s.site && !x.orphan && norm(x.p.code) === norm(s.batch)) ? M.projects.find(x => x.site.id === s.site && norm(x.p.code) === norm(s.batch)).p.code : "(no / old code)"));
           return `<tr><td class="stick"><b>${esc(s.name)}</b><div class="sub">${s.last4 ? "📱 ••" + esc(s.last4) : "no mobile"}${s.devices > 1 ? ` · ${s.devices} devices` : ""}</div></td>
           <td>${dot(s.site)}${esc(s.siteName)}</td><td>${esc(s.batch || "—")}</td><td>${esc(s.group || "—")}</td>
           <td>${s.prog && s.prog.pct != null ? `<span class="pbar" title="Progress tracked on the project site"><i style="width:${Math.max(0, Math.min(100, +s.prog.pct))}%"></i></span> ${Math.round(+s.prog.pct)}%` : `<span class="muted" title="This student hasn't synced progress from the site yet">Not synced</span>`}</td>
           <td class="r">${s.prog && s.prog.sql != null ? esc(s.prog.sql) : `<span class="muted">—</span>`}</td>
+          <td class="r">${s.prog && s.prog.rv != null ? scoreChip(s.prog.rv, "/100", "Best score in Mahendra Dashboard Evaluation Feedback") : `<span class="muted" title="No dashboard evaluated yet">—</span>`}</td>
+          <td class="r">${s.prog && s.prog.viva != null ? scoreChip(s.prog.viva, "%", "Best Mock Viva score in Dexa Coach") : `<span class="muted">—</span>`}</td>
+          <td>${s.prog && s.prog.cert ? `<span class="chip done" title="${esc(s.prog.cert)}">🎓 ${esc(String(s.prog.cert).split(" · ")[1] ? fmtShort(String(s.prog.cert).split(" · ")[1]) : "Issued")}</span>` : `<span class="muted">—</span>`}</td>
           <td class="r">${inR(s)}${s.days.includes(t) ? ` <span class="chip live">today</span>` : idle ? ` <span class="chip warn">idle</span>` : ""}</td>
           <td>${spark(s.days)}</td><td title="${s.last ? esc(new Date(s.last).toLocaleString("en-IN")) : ""}">${s.last ? rel(s.last) : "—"}</td>
           <td><button class="btn ghost sm" data-open="${pid}" data-sub="att" title="Open this student's project code">Project</button></td></tr>`; }).join("")}
         </tbody></table></div>${list.length > 500 ? `<p class="note">Showing the first 500. Narrow the search or use Export CSV for everyone.</p>` : ""}`
         : `<div class="empty"><b>${base.length ? "No student matches these filters" : "No students have checked in yet"}</b><span>${base.length ? "Clear the search or change the filters." : "Students appear here after they log in on a project site with their mobile number."}</span></div>`}`;
+  }
+  function scoreChip(v, unit, tip) { v = Math.round(+v); return `<span class="chip ${v >= 70 ? "done" : v >= 50 ? "warn" : "bad"}" title="${esc(tip)}">${v}${unit}</span>`; }
+  /* groups whose dashboards scored lowest (average of each student's best Dashboard Evaluation score) */
+  function weakGroups(list) {
+    const G = new Map();
+    list.forEach(s => { if (!s.prog || s.prog.rv == null) return; const k = s.site + "|" + (s.batch || "") + "|" + (s.group || ""); const o = G.get(k) || { site: s.siteName, siteId: s.site, code: s.batch || "—", group: s.group || "—", sum: 0, n: 0, min: 101 }; o.sum += +s.prog.rv; o.n++; o.min = Math.min(o.min, +s.prog.rv); G.set(k, o); });
+    if (!G.size) return `<p class="note">📊 Dashboard scores by group appear here once students use <b>Mahendra Dashboard Evaluation Feedback</b> on a site while checked in.</p>`;
+    const arr = [...G.values()].map(o => Object.assign(o, { avg: Math.round(o.sum / o.n) })).sort((a, b) => a.avg - b.avg);
+    const weak = arr.filter(o => o.avg < 70).length;
+    return `<div class="wkg"><div class="wkg-h"><b>📊 Dashboard scores by group</b><span class="muted">${weak ? `${weak} group${weak === 1 ? "" : "s"} below 70 · weakest first` : "All groups at 70+ 👏"} · average of each student's best score</span></div>
+      <div class="wkg-row">${arr.slice(0, 16).map(o => `<div class="wkg-c ${o.avg >= 70 ? "ok" : o.avg >= 50 ? "mid" : "low"}" title="${esc(o.site)} · ${o.n} student${o.n === 1 ? "" : "s"} with a score · lowest ${o.min}"><b>${o.avg}</b><span>${esc(o.group)}</span><small>${dot(o.siteId)}${esc(o.code)}</small></div>`).join("")}</div></div>`;
   }
   function rangeDays() { const t = today(); return Array.from({ length: +S.days }, (_, i) => addDays(t, i - (+S.days - 1))); }
   function spark(days) { const set = new Set(days); const ds = rangeDays().slice(-30); return `<span class="spark" role="img" aria-label="${ds.filter(d => set.has(d)).length} check-ins in the last ${ds.length} days">${ds.map(d => `<i class="${set.has(d) ? "on" : ""}" title="${esc(fmtShort(d))}"></i>`).join("")}</span>`; }
@@ -346,8 +361,8 @@
   function csvAll() {
     const M = model(); const ds = rangeDays(); const list = M.students.filter(s => inSite(s.site));
     if (!list.length) return toast("Nothing to export for this selection.");
-    download(`attendance-${S.site === "all" ? "all-sites" : S.site}-${today()}.csv`, [["Site", "Project code", "Group", "Student", "Mobile (last 4)", "Site progress %", "SQL solved", "Days checked in", ...ds],
-      ...list.map(s => { const set = new Set(s.days); return [s.siteName, s.batch, s.group, s.name, s.last4, s.prog && s.prog.pct != null ? Math.round(s.prog.pct) : "", s.prog && s.prog.sql != null ? s.prog.sql : "", ds.filter(d => set.has(d)).length, ...ds.map(d => set.has(d) ? 1 : 0)]; })]);
+    download(`attendance-${S.site === "all" ? "all-sites" : S.site}-${today()}.csv`, [["Site", "Project code", "Group", "Student", "Mobile (last 4)", "Site progress %", "SQL solved", "Dashboard score", "Mock viva %", "Certificate", "Days checked in", ...ds],
+      ...list.map(s => { const set = new Set(s.days); return [s.siteName, s.batch, s.group, s.name, s.last4, s.prog && s.prog.pct != null ? Math.round(s.prog.pct) : "", s.prog && s.prog.sql != null ? s.prog.sql : "", s.prog && s.prog.rv != null ? s.prog.rv : "", s.prog && s.prog.viva != null ? s.prog.viva : "", s.prog && s.prog.cert ? s.prog.cert : "", ds.filter(d => set.has(d)).length, ...ds.map(d => set.has(d) ? 1 : 0)]; })]);
     toast(`CSV with ${list.length} student${list.length === 1 ? "" : "s"} sent to your downloads.`);
   }
   function csvOne() {
@@ -381,7 +396,7 @@
     on("#tk-fact", "change", e => { S.fAct = e.target.value; render(); });
     document.querySelectorAll("[data-sort]").forEach(b => b.addEventListener("click", () => {
       const k = b.dataset.sort, which = S.tab === "students" ? "ssort" : "psort"; const cur = S[which];
-      S[which] = cur[0] === k ? [k, -cur[1]] : [k, ["last", "today", "d7", "students", "days", "prog", "sql"].includes(k) ? -1 : 1]; ls.set("pvt_" + which, S[which]); render();
+      S[which] = cur[0] === k ? [k, -cur[1]] : [k, ["last", "today", "d7", "students", "days", "prog", "sql", "rv", "viva", "cert"].includes(k) ? -1 : 1]; ls.set("pvt_" + which, S[which]); render();
       const nb = document.querySelector(`[data-sort="${k}"]`); if (nb) nb.focus(); }));
     const tabs = [...document.querySelectorAll('[role="tab"][data-tab]')];
     tabs.forEach((b, i) => { b.addEventListener("click", () => { S.tab = b.dataset.tab; ls.set("pvt_tab", S.tab); render(); const nb = document.getElementById("tab-" + S.tab); if (nb) nb.focus(); });

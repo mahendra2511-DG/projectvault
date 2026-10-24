@@ -85,7 +85,7 @@ function row(s, probe, rep) {
   base.projects = Array.isArray(probe.j.projects) ? probe.j.projects : [];
   if (rep) {
     if (rep.j && rep.j.ok) base.report = { today: rep.j.today, unique: rep.j.unique, views: rep.j.views, daily: rep.j.daily || [], students: (rep.j.students || []).map(x => ({ name: x.name, group: x.group, batch: x.batch, last4: x.last4, uid: x.uid, first: x.first, last: x.last, views: x.views, days: x.days || [], lastPage: x.lastPage })),
-      progress: Object.fromEntries(Object.entries(rep.j.progress || {}).slice(0, 3000).map(([k, v]) => [k, { pct: v && v.pct, sql: v && v.sql, ts: v && v.ts }])) };
+      progress: Object.fromEntries(Object.entries(rep.j.progress || {}).slice(0, 3000).map(([k, v]) => [k, { pct: v && v.pct, sql: v && v.sql, ts: v && v.ts, rv: v && v.rv, viva: v && v.viva, ins: v && v.ins, cert: v && v.cert }])) };
     else if (rep.status === 401) Object.assign(base, { state: "auth", error: "Login failed on this site (its trainer password may be different)" });
     else Object.assign(base, { state: "error", error: dbErr(rep.j && rep.j.error) });
   }

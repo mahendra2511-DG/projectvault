@@ -171,3 +171,11 @@ input[type=search]:focus,select:focus{border-color:var(--primary);outline:none;b
   .drawer{padding:14px}.dh{flex-direction:column}.bar2 input[type=search]{min-width:100%}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* review / viva / certificate (Dexa Coach) */
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.wkg{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 12px;background:var(--surface,transparent)}
+.wkg-h{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:13.5px;margin-bottom:10px}
+.wkg-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.wkg-c{flex:none;min-width:104px;border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;font-size:12.5px}
+.wkg-c b{font-size:20px;line-height:1}.wkg-c small{color:var(--muted);display:flex;align-items:center;gap:4px}
+.wkg-c.mid{border-left-color:var(--warn)}.wkg-c.low{border-left-color:var(--bad)}.wkg-c.low b{color:var(--bad)}.wkg-c.mid b{color:var(--warn)}
