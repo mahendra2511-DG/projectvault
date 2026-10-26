@@ -179,3 +179,4 @@ input[type=search]:focus,select:focus{border-color:var(--primary);outline:none;b
 .wkg-c{flex:none;min-width:104px;border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;font-size:12.5px}
 .wkg-c b{font-size:20px;line-height:1}.wkg-c small{color:var(--muted);display:flex;align-items:center;gap:4px}
 .wkg-c.mid{border-left-color:var(--warn)}.wkg-c.low{border-left-color:var(--bad)}.wkg-c.low b{color:var(--bad)}.wkg-c.mid b{color:var(--warn)}
+.h3{font-size:15px;margin:18px 0 8px;font-weight:700}.h3 .muted{font-weight:400;font-size:13px}

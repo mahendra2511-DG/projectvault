@@ -57,7 +57,7 @@ module.exports = async (req, res) => {
   const list = sites();
 
   // 1) check the login on ONE connected site first, so a wrong password doesn't count as a failed login on all 11
-  const probes = await Promise.all(list.map(s => call(api(s), { method: "GET" }, 8000)));
+  const probes = await Promise.all(list.map(s => call(api(s) + "?fresh=1", { method: "GET" }, 8000)));   // always the latest status
   const connected = list.map((s, i) => ({ s, p: probes[i] })).filter(x => x.p.status === 200 && x.p.j && x.p.j.configured !== false && Array.isArray(x.p.j.projects));
   if (!connected.length) return send(res, 200, { ok: true, checkedAt: now, warning: "No site has its live database connected yet.", sites: list.map((s, i) => row(s, probes[i], null)) });
   // try connected sites one by one: a wrong password stops at once, a site with a database problem is skipped
@@ -68,6 +68,8 @@ module.exports = async (req, res) => {
     if (chk.status === 401 || chk.status === 429) break;
   }
   if (!okSite) return send(res, chk && chk.status === 429 ? 429 : chk && chk.status === 401 ? 401 : 502, { ok: false, error: (chk && chk.j && chk.j.error) || "Wrong username or password." });
+  // login only: the dashboard shows its saved copy from the last update (12 PM / 8 PM) and does not read every site again
+  if (b.checkOnly) return send(res, 200, { ok: true, checkOnly: true });
 
   // 2) reports from every connected site, in parallel
   const reps = await Promise.all(list.map((s, i) => {
@@ -85,6 +87,8 @@ function row(s, probe, rep) {
   base.projects = Array.isArray(probe.j.projects) ? probe.j.projects : [];
   if (rep) {
     if (rep.j && rep.j.ok) base.report = { today: rep.j.today, unique: rep.j.unique, views: rep.j.views, daily: rep.j.daily || [], students: (rep.j.students || []).map(x => ({ name: x.name, group: x.group, batch: x.batch, last4: x.last4, uid: x.uid, first: x.first, last: x.last, views: x.views, days: x.days || [], lastPage: x.lastPage })),
+      accounts: (rep.j.accounts || []).slice(0, 5000).map(a => ({ uid: a.uid, name: a.name, email: a.email, last4: a.last4, batch: a.batch, group: a.group, created: a.created, lastLogin: a.lastLogin, logins: a.logins, hasPw: !!a.hasPw })),
+      logins: (rep.j.logins || []).slice(0, 200).map(l => ({ t: l.t, uid: l.uid, name: l.name, batch: l.batch, group: l.group, how: l.how })),
       progress: Object.fromEntries(Object.entries(rep.j.progress || {}).slice(0, 3000).map(([k, v]) => [k, { pct: v && v.pct, sql: v && v.sql, ts: v && v.ts, rv: v && v.rv, viva: v && v.viva, ins: v && v.ins, cert: v && v.cert }])) };
     else if (rep.status === 401) Object.assign(base, { state: "auth", error: "Login failed on this site (its trainer password may be different)" });
     else Object.assign(base, { state: "error", error: dbErr(rep.j && rep.j.error) });

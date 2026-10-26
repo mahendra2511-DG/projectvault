@@ -77,22 +77,36 @@
   }
 
   /* ---------- API ---------- */
-  async function load(user, pass) {
+  /* the last full update is saved in this browser, so logging in again (or reloading) shows it without reading every site */
+  const CK = "pvt_cache_v1";
+  function cached() { const c = ls.get(CK, null); return c && c.sites && c.days === S.days && c.checkedAt >= lastSlot() ? c : null; }
+  async function load(user, pass, force) {
     S.user = user; S.loading = true; S.error = ""; render();
     try {
-      const r = await fetch("api/hub", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user, pass, days: S.days }) });
-      const j = await r.json().catch(() => ({}));
+      const c = force ? null : cached();
+      const r = await fetch("api/hub", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user, pass, days: S.days, checkOnly: !!c }) });
+      let j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok && j.checkOnly) j = c;
+      else if (r.ok && j.ok) { try { ls.set(CK, j); } catch (e) {} }
       if (!r.ok || !j.ok) { S.error = (S.data ? "Couldn't refresh: " : "") + (j.error || (r.status === 404 ? "The tracking service (api/hub) is not deployed yet. Push the new ProjectVault zip to GitHub." : "Could not load data (" + r.status + ").")); if (r.status === 401) { ss.del("pvt_u"); ss.del("pvt_p"); S.data = null; } }
       else { S.data = j; S.error = ""; ss.set("pvt_u", user); ss.set("pvt_p", pass); if (S.site !== "all" && !j.sites.some(x => x.id === S.site)) S.site = "all"; }
     } catch (e) { S.error = location.protocol === "file:" ? "Open this page from the deployed ProjectVault site (it needs the /api/hub server function)." : "No internet connection or the server did not answer."; }
     S.loading = false; render(); schedule();
   }
-  function refresh() { const u = ss.get("pvt_u"), p = ss.get("pvt_p"); if (u && p) load(u, p); }
-  /* auto-refresh only 5 times a day (each refresh reads every site's database): 9 AM, 12 PM, 3 PM, 6 PM, 9 PM */
-  const SLOTS = [9, 12, 15, 18, 21];
-  function lastSlot() { const n = new Date(); const h = SLOTS.filter(x => x <= n.getHours()).pop(); if (h == null) return 0; const d = new Date(n); d.setHours(h, 0, 0, 0); return d.getTime(); }
-  function schedule() { clearInterval(timer); if (S.auto && S.data) timer = setInterval(() => { const ls2 = lastSlot(); if (ls2 && S.data.checkedAt < ls2 && document.visibilityState === "visible" && !S.loading) refresh(); }, 60000); }
-  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S.auto && S.data && !S.loading && S.data.checkedAt < lastSlot()) refresh(); });
+  function refresh(force) { const u = ss.get("pvt_u"), p = ss.get("pvt_p"); if (u && p) load(u, p, force === true); }
+  /* data updates only twice a day (each update reads every site's database): 12 PM (noon) and 8 PM, India time */
+  const SLOTS = [12, 20];
+  const istNow = () => new Date(Date.now() + 330 * 60000);   // India time, whatever the computer's time zone
+  function lastSlot() { const n = istNow(); const hh = n.getUTCHours(); let h = SLOTS.filter(x => x <= hh).pop(); const d = new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate(), 0, 0, 0)); if (h == null) { h = SLOTS[SLOTS.length - 1]; d.setUTCDate(d.getUTCDate() - 1); } return d.getTime() + h * 3600e3 - 330 * 60000; }
+  function nextSlotLabel() { const hh = istNow().getUTCHours(); return hh < 12 ? "12 PM" : hh < 20 ? "8 PM" : "12 PM tomorrow"; }
+  function schedule() { clearInterval(timer); if (S.auto && S.data) timer = setInterval(() => { if (S.data.checkedAt < lastSlot() && document.visibilityState === "visible" && !S.loading) refresh(true); }, 60000); }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S.auto && S.data && !S.loading && S.data.checkedAt < lastSlot()) refresh(true); });
+  /* a manual update reads all 12 databases, so it is allowed at most once an hour */
+  function manualRefresh() {
+    const age = S.data ? Date.now() - S.data.checkedAt : 1e12;
+    if (age < 3600e3) return toast(`Data is from ${Math.max(1, Math.round(age / 60000))} min ago. Next update at ${nextSlotLabel()} (manual update allowed once an hour, to save the sites' database limit).`);
+    refresh(true);
+  }
 
 
   /* ================= helpers for the UI ================= */
@@ -127,9 +141,9 @@
         <a class="brand" href="./" title="Back to ProjectVault"><span class="cube" aria-hidden="true"></span><span><b>Project<i>Vault</i></b><small>Trainer Dashboard</small></span></a>
         ${logged ? `<div class="tools" role="toolbar" aria-label="Dashboard controls">
           <label class="fld"><span>Range</span><select id="tk-days" aria-label="Date range">${[7, 14, 30, 60, 90].map(d => `<option value="${d}" ${+S.days === d ? "selected" : ""}>Last ${d} days</option>`).join("")}</select></label>
-          <label class="switch" title="Reload data from all sites automatically at 9 AM, 12 PM, 3 PM, 6 PM and 9 PM while this tab is open. Use Refresh any time."><input type="checkbox" id="tk-auto" ${S.auto ? "checked" : ""}><span class="knob" aria-hidden="true"></span>Auto-refresh</label>
-          <span class="upd" id="tk-upd" title="${esc(new Date(S.data.checkedAt).toLocaleString("en-IN"))}">${S.loading ? `<span class="spin" aria-hidden="true"></span>Refreshing…` : `Updated ${esc(new Date(S.data.checkedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }))} · ${rel(S.data.checkedAt)}${S.auto ? " · auto 5×/day" : ""}`}</span>
-          <button class="btn" id="tk-ref" ${S.loading ? "disabled aria-busy=\"true\"" : ""} title="Reload data from all sites now">↻ Refresh</button>
+          <label class="switch" title="Data updates twice a day: 12 PM (noon) and 8 PM India time. Refresh works once an hour."><input type="checkbox" id="tk-auto" ${S.auto ? "checked" : ""}><span class="knob" aria-hidden="true"></span>Auto-refresh</label>
+          <span class="upd" id="tk-upd" title="${esc(new Date(S.data.checkedAt).toLocaleString("en-IN"))}">${S.loading ? `<span class="spin" aria-hidden="true"></span>Refreshing…` : `Updated ${esc(new Date(S.data.checkedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }))} · ${rel(S.data.checkedAt)}${S.auto ? " · updates 12 PM & 8 PM" : ""}`}</span>
+          <button class="btn" id="tk-ref" ${S.loading ? "disabled aria-busy=\"true\"" : ""} title="Read all sites again now (once an hour)">↻ Refresh</button>
           <button class="btn ghost" id="tk-csv" title="Download students and day-by-day check-ins for the selected range and site filter">⬇ Export CSV</button>
           <button class="btn ghost" id="tk-out">Log out</button></div>` : ""}
       </header>
@@ -173,7 +187,7 @@
     if (bad.length) exc.push([bad.some(s => s.state === "error") ? "bad" : "warn", `${bad.length} site${bad.length > 1 ? "s" : ""} not reporting`, bad.map(s => `${s.name}: ${s.state === "error" ? s.error : STATE[s.state] ? STATE[s.state][0] : s.state}`).join(" · ")]);
     tk.forEach(x => { const [st] = sessionState(x.p, t); const c = counts(x.p, x.todayStage.key); if (st === "ended" && c.pending) exc.push(["bad", `${x.p.code}: ${c.pending} group${c.pending > 1 ? "s" : ""} not marked`, `${x.todayStage.label} session has ended (${x.site.name}). Update the status on the site.`]); });
     if (pres.abs) exc.push(["bad", `${pres.abs} group${pres.abs > 1 ? "s" : ""} marked absent today`, tk.filter(x => counts(x.p, x.todayStage.key).absent).map(x => x.p.code).join(", ")]);
-    const tabs = [["today", "Today & upcoming", todays.length], ["projects", "Project codes", live.length], ["students", "Students", studs.length], ["visits", "Daily visits", null]];
+    const tabs = [["today", "Today & upcoming", todays.length], ["projects", "Project codes", live.length], ["students", "Students", studs.length], ["logins", "Logins & accounts", null], ["visits", "Daily visits", null]];
     return `
       <section class="kpis" aria-label="Summary">${K.map(([l, val, c, cls]) => `<div class="kpi ${cls}"><span class="kl">${esc(l)}</span><b class="kv">${esc(val)}</b><span class="kc" title="${esc(c)}">${esc(c)}</span></div>`).join("")}</section>
       <div class="ctx">
@@ -181,7 +195,7 @@
         ${exc.length ? `<ul class="exc" aria-label="Needs attention">${exc.map(([k, h, d]) => `<li class="${k}" title="${esc(d)}"><b>${esc(h)}</b><span>${esc(d)}</span></li>`).join("")}</ul>` : `<span class="allok">✓ Nothing needs attention right now</span>`}
       </div>
       <nav class="tabs" role="tablist" aria-label="Workspace">${tabs.map(([k, l, n]) => `<button role="tab" id="tab-${k}" aria-controls="panel" aria-selected="${S.tab === k}" tabindex="${S.tab === k ? 0 : -1}" class="${S.tab === k ? "on" : ""}" data-tab="${k}">${esc(l)}${n != null ? `<span class="cnt">${n}</span>` : ""}</button>`).join("")}</nav>
-      <section class="panel" id="panel" role="tabpanel" aria-labelledby="tab-${S.tab}">${na && S.tab !== "visits" ? emptyNA() : S.tab === "today" ? todayHtml(M, live) : S.tab === "projects" ? projectsHtml(M) : S.tab === "students" ? studentsHtml(M) : visitsHtml(M)}</section>
+      <section class="panel" id="panel" role="tabpanel" aria-labelledby="tab-${S.tab}">${na && S.tab !== "visits" ? emptyNA() : S.tab === "today" ? todayHtml(M, live) : S.tab === "projects" ? projectsHtml(M) : S.tab === "students" ? studentsHtml(M) : S.tab === "logins" ? loginsHtml(M) : visitsHtml(M)}</section>
       ${S.open ? detailHtml(M) : ""}`;
   }
   const emptyNA = () => `<div class="empty"><b>No data available for this selection</b><span>${S.site === "all" ? "None of the project sites returned data. Check that they are deployed and that their Upstash database is connected." : "This site is not reporting. See the notice above."}</span></div>`;
@@ -290,6 +304,52 @@
         </tbody></table></div>${list.length > 500 ? `<p class="note">Showing the first 500. Narrow the search or use Export CSV for everyone.</p>` : ""}`
         : `<div class="empty"><b>${base.length ? "No student matches these filters" : "No students have checked in yet"}</b><span>${base.length ? "Clear the search or change the filters." : "Students appear here after they log in on a project site with their mobile number."}</span></div>`}`;
   }
+  /* ---------- Logins & accounts: who logged in, on which site, with which project code and group (old + new students) ---------- */
+  function accRows(M) {
+    const out = [];
+    S.data.sites.filter(s => s.report && inSite(s.id)).forEach(site => {
+      const acc = site.report.accounts || [], byUid = new Set(acc.map(a => a.uid));
+      acc.forEach(a => out.push(Object.assign({ site: site.id, siteName: site.name, status: a.hasPw ? "Active" : "Old – no password yet" }, a)));
+      // students seen only through check-ins (old visit flow) are listed too, so nobody is missing
+      M.students.filter(s => s.site === site.id && !(s.uid && byUid.has(s.uid))).forEach(s => out.push({ site: site.id, siteName: site.name, uid: s.uid || "", name: s.name, email: "", last4: s.last4, batch: s.batch, group: s.group, created: s.first, lastLogin: s.last, logins: 0, status: "Check-in only" }));
+    });
+    return out;
+  }
+  function loginsHtml(M) {
+    const all = accRows(M), q = S.q.trim().toLowerCase(), opt = (v, cur, l) => `<option value="${esc(v)}" ${cur === v ? "selected" : ""}>${esc(l || v)}</option>`;
+    const codes = [...new Set(all.map(s => s.batch || "(none)"))].sort(), groups = [...new Set(all.filter(s => S.fCode === "all" || (s.batch || "(none)") === S.fCode).map(s => s.group || "(none)"))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    const fSt = S.fSt || "all";
+    const list = all.filter(s => (S.fCode === "all" || (s.batch || "(none)") === S.fCode) && (S.fGroup === "all" || (s.group || "(none)") === S.fGroup) && (fSt === "all" || s.status === fSt)
+      && (!q || [s.name, s.email, s.group, s.batch, s.last4, s.siteName].join(" ").toLowerCase().includes(q))).sort((a, b) => (b.lastLogin || 0) - (a.lastLogin || 0));
+    const feed = [];
+    S.data.sites.filter(s => s.report && inSite(s.id)).forEach(site => (site.report.logins || []).forEach(l => feed.push(Object.assign({ site: site.id, siteName: site.name }, l))));
+    feed.sort((a, b) => b.t - a.t);
+    const fl = feed.filter(l => (S.fCode === "all" || (l.batch || "(none)") === S.fCode) && (S.fGroup === "all" || (l.group || "(none)") === S.fGroup) && (!q || [l.name, l.batch, l.group, l.siteName].join(" ").toLowerCase().includes(q)));
+    const n = (st) => all.filter(s => s.status === st).length;
+    const HOW = { login: "Logged in", signup: "New account", claim: "Old account – set password", reset: "Password reset" };
+    S._accList = list;
+    return `<div class="bar2"><input id="tk-q" type="search" placeholder="Search name, email, project code, group or last 4 digits…" value="${esc(S.q)}" aria-label="Search students">
+        <select id="tk-fcode" aria-label="Project code">${opt("all", S.fCode, "All project codes")}${codes.map(c => opt(c, S.fCode)).join("")}</select>
+        <select id="tk-fgroup" aria-label="Group">${opt("all", S.fGroup, "All groups")}${groups.map(g => opt(g, S.fGroup)).join("")}</select>
+        <select id="tk-fst" aria-label="Status">${opt("all", fSt, "Old + new students")}${["Active", "Old – no password yet", "Check-in only"].map(x => opt(x, fSt)).join("")}</select>
+        <button class="btn ghost sm" id="tk-acsv">⬇ CSV</button><span class="muted">${list.length} of ${all.length} · 🟢 ${n("Active")} active · 🟡 ${n("Old – no password yet")} old (no password yet) · ${n("Check-in only")} check-in only</span></div>
+      <h3 class="h3">Recent logins <span class="muted">(last ${fl.length})</span></h3>
+      ${fl.length ? `<div class="twrap"><table class="tbl"><thead><tr><th>When</th><th>Student</th><th>Site</th><th>Project code</th><th>Group</th><th>How</th></tr></thead><tbody>
+        ${fl.slice(0, 200).map(l => `<tr><td title="${esc(new Date(l.t).toLocaleString("en-IN"))}">${esc(new Date(l.t).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}</td><td><b>${esc(l.name || "—")}</b></td><td>${dot(l.site)}${esc(l.siteName)}</td><td>${esc(l.batch || "—")}</td><td>${esc(l.group || "—")}</td><td>${esc(HOW[l.how] || l.how || "Logged in")}</td></tr>`).join("")}</tbody></table></div>`
+        : `<p class="note">No logins recorded yet. Logins appear here after the sites are updated with the new zip.</p>`}
+      <h3 class="h3">All students — old and new</h3>
+      ${list.length ? `<div class="twrap tall"><table class="tbl"><thead><tr><th class="stick">Student</th><th>Email</th><th>Site</th><th>Project code</th><th>Group</th><th>Status</th><th>Joined</th><th>Last login / visit</th><th class="r">Logins</th></tr></thead><tbody>
+        ${list.slice(0, 800).map(s => `<tr><td class="stick"><b>${esc(s.name)}</b><div class="sub">${s.last4 ? "📱 ••" + esc(s.last4) : "no mobile"}</div></td><td>${esc(s.email || "—")}</td><td>${dot(s.site)}${esc(s.siteName)}</td><td>${esc(s.batch || "—")}</td><td>${esc(s.group || "—")}</td>
+          <td>${s.status === "Active" ? `<span class="chip done">Active</span>` : s.status === "Check-in only" ? `<span class="chip">Check-in only</span>` : `<span class="chip warn" title="Old account: they log in with their old mobile number and set a password once">Old – no password yet</span>`}</td>
+          <td>${s.created ? esc(fmtShort(ymd(new Date(s.created)))) : "—"}</td><td title="${s.lastLogin ? esc(new Date(s.lastLogin).toLocaleString("en-IN")) : ""}">${s.lastLogin ? rel(s.lastLogin) : "—"}</td><td class="r">${s.logins || 0}</td></tr>`).join("")}
+        </tbody></table></div>${list.length > 800 ? `<p class="note">Showing the first 800. Use CSV for everyone.</p>` : ""}`
+        : `<div class="empty"><b>No student matches</b><span>Clear the search or change the filters.</span></div>`}`;
+  }
+  function csvAcc() {
+    const L = S._accList || []; const iso = (t) => t ? new Date(t).toLocaleString("en-IN") : "";
+    download(`students-logins-${today()}.csv`, [["Student", "Email", "Mobile (last 4)", "Site", "Project code", "Group", "Status", "Joined", "Last login / visit", "Logins"], ...L.map(s => [s.name, s.email, s.last4, s.siteName, s.batch, s.group, s.status, iso(s.created), iso(s.lastLogin), s.logins || 0])]);
+    toast("CSV sent to your downloads.");
+  }
   function scoreChip(v, unit, tip) { v = Math.round(+v); return `<span class="chip ${v >= 70 ? "done" : v >= 50 ? "warn" : "bad"}" title="${esc(tip)}">${v}${unit}</span>`; }
   /* groups whose dashboards scored lowest (average of each student's best Dashboard Evaluation score) */
   function weakGroups(list) {
@@ -376,9 +436,9 @@
   function bind() {
     const on = (s, ev, fn) => { const el = $(s); if (el) el.addEventListener(ev, fn); };
     on("#tk-login", "submit", e => { e.preventDefault(); load($("#tk-u").value.trim(), $("#tk-p").value); });
-    on("#tk-ref", "click", refresh); on("#tk-retry", "click", refresh);
-    on("#tk-out", "click", () => { ss.del("pvt_u"); ss.del("pvt_p"); S.data = null; S.open = null; S.error = ""; clearInterval(timer); render(); });
-    on("#tk-days", "change", e => { S.days = +e.target.value; ls.set("pvt_days", S.days); refresh(); });
+    on("#tk-ref", "click", manualRefresh); on("#tk-retry", "click", () => refresh(true));
+    on("#tk-out", "click", () => { try { localStorage.removeItem(CK); } catch (e) {} ss.del("pvt_u"); ss.del("pvt_p"); S.data = null; S.open = null; S.error = ""; clearInterval(timer); render(); });
+    on("#tk-days", "change", e => { S.days = +e.target.value; ls.set("pvt_days", S.days); refresh(true); });
     on("#tk-auto", "change", e => { S.auto = e.target.checked; ls.set("pvt_auto", S.auto); schedule(); render(); });
     on("#tk-csv", "click", csvAll); on("#tk-csv-one", "click", csvOne);
     on("#tk-only", "change", e => { S.onlyPres = e.target.checked; render(); });
@@ -394,6 +454,8 @@
     on("#tk-fcode", "change", e => { S.fCode = e.target.value; S.fGroup = "all"; render(); });
     on("#tk-fgroup", "change", e => { S.fGroup = e.target.value; render(); });
     on("#tk-fact", "change", e => { S.fAct = e.target.value; render(); });
+    on("#tk-fst", "change", e => { S.fSt = e.target.value; render(); });
+    on("#tk-acsv", "click", csvAcc);
     document.querySelectorAll("[data-sort]").forEach(b => b.addEventListener("click", () => {
       const k = b.dataset.sort, which = S.tab === "students" ? "ssort" : "psort"; const cur = S[which];
       S[which] = cur[0] === k ? [k, -cur[1]] : [k, ["last", "today", "d7", "students", "days", "prog", "sql", "rv", "viva", "cert"].includes(k) ? -1 : 1]; ls.set("pvt_" + which, S[which]); render();
@@ -414,7 +476,7 @@
     if (S.sitesOpen || S.colsOpen) { S.sitesOpen = false; S.colsOpen = false; render(); const b = $("#tk-sites"); if (b) b.focus(); }
     else if (S.open) { $("#tk-close") && $("#tk-close").click(); }
   });
-  setInterval(() => { const u = $("#tk-upd"); if (u && S.data && !S.loading) u.textContent = `Updated ${new Date(S.data.checkedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} · ${rel(S.data.checkedAt)}${S.auto ? " · auto 5×/day" : ""}`; }, 30000);
+  setInterval(() => { const u = $("#tk-upd"); if (u && S.data && !S.loading) u.textContent = `Updated ${new Date(S.data.checkedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} · ${rel(S.data.checkedAt)}${S.auto ? " · updates 12 PM & 8 PM" : ""}`; }, 30000);
   render();
   if (ss.get("pvt_u") && ss.get("pvt_p")) refresh();
 })();
